@@ -411,7 +411,6 @@ footer nav a:hover { color: var(--teal-strong); }
       <li><a href="#data">Data</a></li>
       <li><a href="#results">Results</a></li>
       <li><a href="#local">Local antibiogram</a></li>
-      <li><a href="#limitations">Limitations</a></li>
       <li><a href="#citation">Cite</a></li>
     </ul>
     <div class="nav-cta">
@@ -846,28 +845,6 @@ footer nav a:hover { color: var(--teal-strong); }
         <div class="fact"><b>Caveat.</b> The retrospective analysis used each held-out site's observed prevalence, which is stronger information than a hospital would usually have in advance. The web app offers this adjustment as an experimental feature.</div>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- ================= LIMITATIONS ================= -->
-<section id="limitations">
-  <div class="wrap">
-    <div class="section-head">
-      <p class="eyebrow">Intended use and limitations</p>
-      <h2>A research prototype, <em>not a clinical tool</em></h2>
-    </div>
-    <div class="caution" role="note">
-      <h3>Not for clinical decision-making</h3>
-      <p>ARMD-Predict and its web application are research prototypes for independent technical evaluation. The models were developed and evaluated retrospectively, have not been prospectively validated or integrated into an electronic health record, and have not been shown to change prescribing or patient outcomes. Prospective evaluation is required before any clinical use.</p>
-    </div>
-    <ul class="limits">
-      <li>The pooled models used a random patient-grouped split from the same period, so results do not estimate performance in future years. In an earlier analysis with a simpler feature set, chronological splitting reduced AUROC by approximately 0.04.</li>
-      <li>All four health systems are U.S. academic medical centers. Performance in community hospitals and in other countries is unknown.</li>
-      <li>Reported calibration across models is optimistic, because the choice of transform used test-set calibration error. Operating points were derived and evaluated on the same test orders.</li>
-      <li>The phenotype models were evaluated given the observed organism, not as an end-to-end pipeline from predicted organism to phenotype.</li>
-      <li>Intermediate results were grouped with resistant, culture-negative specimens were excluded, and no rule removed probable contaminants such as single-set skin commensals in blood cultures.</li>
-      <li>Race and ethnicity were unavailable, sex labels were inferred at three sites, and the Area Deprivation Index describes a neighborhood rather than an individual.</li>
-    </ul>
   </div>
 </section>
 
