@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ARMD-Predict</title>
 <meta name="description" content="ARMD-Predict estimates, at culture ordering, the probability that an organism recovered from the culture will be susceptible to each candidate antibiotic: a patient-specific antibiogram trained on four U.S. health systems. Research prototype, not for clinical decision-making.">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0A1426" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://healthrex.github.io/ARMD-Predict/">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
@@ -30,7 +29,7 @@
 
 <style>
 :root {
-  --paper: #F8FAFC;
+  --paper: #FFFFFF;
   --paper-raised: #FFFFFF;
   --paper-sunken: #EEF2F7;
   --paper-tint: #EEF8FC;
@@ -63,46 +62,6 @@
   --gutter: 24px;
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #0A1426;
-    --paper-raised: #0F1C33;
-    --paper-sunken: #142441;
-    --paper-tint: #0E2240;
-    --ink: #E8EEF7;
-    --ink-soft: #B6C2D4;
-    --ink-faint: #8D9AB0;
-    --rule: rgba(255, 255, 255, 0.09);
-    --rule-strong: rgba(255, 255, 255, 0.17);
-    --teal-strong: #3FD0D2;
-    --teal-wash: rgba(40, 199, 201, 0.14);
-    --purple-strong: #A291F6;
-    --purple-wash: rgba(116, 87, 232, 0.18);
-    --mark-model: #13A4A6;
-    --mark-rule: #6F7D93;
-    --btn-bg: #28C7C9;
-    --btn-ink: #082A5E;
-    --btn-bg-hover: #5ED8DA;
-    --caution-bg: #261E10;
-    --caution-rule: #C9952F;
-    --code-bg: #0C182D;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --paper: #0A1426; --paper-raised: #0F1C33; --paper-sunken: #142441; --paper-tint: #0E2240;
-  --ink: #E8EEF7; --ink-soft: #B6C2D4; --ink-faint: #8D9AB0;
-  --rule: rgba(255, 255, 255, 0.09); --rule-strong: rgba(255, 255, 255, 0.17);
-  --teal-strong: #3FD0D2; --teal-wash: rgba(40, 199, 201, 0.14);
-  --purple-strong: #A291F6; --purple-wash: rgba(116, 87, 232, 0.18);
-  --mark-model: #13A4A6; --mark-rule: #6F7D93;
-  --btn-bg: #28C7C9; --btn-ink: #082A5E; --btn-bg-hover: #5ED8DA;
-  --caution-bg: #261E10; --caution-rule: #C9952F; --code-bg: #0C182D;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
-  color-scheme: dark;
-}
-
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
@@ -740,9 +699,7 @@ footer nav a:hover { color: var(--teal-strong); }
 
     <figure class="fig fig-plain">
       <picture>
-        <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="assets/main_results_tall_dark.png" width="880" height="2520">
         <source media="(max-width: 640px)" srcset="assets/main_results_tall.png" width="880" height="2520">
-        <source media="(prefers-color-scheme: dark)" srcset="assets/main_results_dark.png" width="2200" height="1400">
         <img src="assets/main_results.png" width="2200" height="1400" alt="Held-out AUROC with 95% confidence intervals for the 23 pooled empiric-susceptibility models in four panels. Urine inpatient, median 0.773: meropenem 0.831, vancomycin 0.825, cefepime 0.807, ceftriaxone 0.773, piperacillin–tazobactam 0.699, gentamicin 0.679, ampicillin 0.629. Urine outpatient, median 0.708: levofloxacin 0.747, ciprofloxacin 0.743, cefpodoxime 0.733, cefazolin 0.708, TMP-SMX 0.673, nitrofurantoin 0.662, amoxicillin–clavulanate 0.638. Blood inpatient, median 0.703: meropenem 0.835, vancomycin 0.825, cefepime 0.704, ceftriaxone 0.703, piperacillin–tazobactam 0.658, gentamicin 0.656, ampicillin 0.637. Respiratory: ceftriaxone inpatient 0.825, levofloxacin outpatient 0.822.">
       </picture>
     </figure>
