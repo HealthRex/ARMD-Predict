@@ -1,0 +1,126 @@
+# Leakage policy, applied to every model table before it is saved.
+#
+# The empiric question is asked at culture-order time, so nothing recorded
+# after the order (organism, susceptibility, label provenance) and no absolute
+# timestamp may become a feature. Order: drop forbidden exact columns, drop
+# label-like microbial_resistance columns, drop outcome-derived diagnoses, drop
+# absolute timestamps, then RAISE if any remaining column matches a forbidden
+# label pattern.
+
+# Identifiers, post-result outcomes and label metadata (dropped).
+forbidden_exact:
+  - encounter_id
+  - order_id
+  - anon_id
+  - csn
+  - order_proc_id
+  - pat_enc_csn_id_coded
+  - order_proc_id_coded
+  - organism
+  - was_positive
+  - neg_cx
+  - mult_org_ast
+  - has_AST
+  - prelim_AST
+  - AST_panel
+  - enzyme_class
+  - enzyme
+  - AST_code
+  - AST_inequality
+  - AST_val1
+  - AST_val2
+  - susceptibility
+  - susceptibility_raw
+  - is_implied
+  - had_conflict
+  - label_source
+  - label_source_resolved
+  - labels_set
+  - n_sources
+  - implied_susceptibility_organism
+  - implied_susceptibility_antibiotic
+  - implied_susceptibility_susceptibility
+  - implied_susceptibility_implied_susceptibility
+
+# Carried in the table for the patient-grouped split, never a feature.
+protected_metadata:
+  - patient_id
+  - culture_time
+
+# ICD-10 Z16 ("resistance to antimicrobial drugs") and Z22 ("carrier status")
+# are culture results coded as diagnoses; they are not known at order time.
+drop_outcome_derived_diagnoses: true
+outcome_derived_diagnosis_patterns:
+  - "(?i)resistan(?:ce|t)[ _]+to[ _]+(?:anti)?microbial"
+  - "(?i)antimicrobial[ _]+resistance"
+  - "(?i)(?:^|[_ ])carrier[ _]+status"
+  - "(?i)^comorbidity_.*(?:^|[_ ])z16(?:[_ ]|$)"
+  - "(?i)^comorbidity_.*(?:^|[_ ])z22(?:[_ ]|$)"
+
+# Relative pre-index timing columns. These are kept even if they also match a
+# forbidden timestamp or label pattern.
+safe_time_patterns:
+  - "(?i)days_to_culture"
+  - "(?i)days_to_culutre"
+  - "(?i)time_to_culture"
+  - "(?i)time_to_culturetime"
+  - "(?i)_start_days_culture"
+  - "(?i)_end_days_culture"
+  - "(?i)days_before_culture"
+  - "(?i)days_prior"
+  - "(?i)prior_.*(days|time)_to"
+  - "(?i)nursing_home.*days"
+  - "(?i)window_\\d+d"
+  - "(?i)lookback"
+  - "(?i)min_days"
+  - "(?i)max_days"
+  - "(?i)any_within_\\d+d"
+
+# Absolute timestamps (dropped). MGB's per-patient shifted dates match "_shifted".
+forbidden_timestamp_patterns:
+  - "(?i)(?:^|_)dts(?:_|$)"
+  - "(?i)(?:^|_)timestamp(?:_|$)"
+  - "(?i)(?:^|_)datetime(?:_|$)"
+  - "(?i)(?:^|_)date(?:_|$)"
+  - "(?i)order_time(?:_|$)"
+  - "(?i)jittered"
+  - "(?i)_shifted(?:$|_)"
+
+# Label patterns. A surviving column that matches one of these stops the build.
+forbidden_patterns:
+  - "(?i)(?:^|_)mic(?:$|_)"
+  - "(?i)suscept"
+  - "(?i)(?:^|_)ast(?:$|_)"
+  - "(?i)clsi"
+  - "(?i)_pheno"
+  - "(?i)(?:^|_)sir(?:$|_)"
+  - "(?i)(?:^|_)enzyme(?:$|_)"
+  - "(?i)ast_val"
+  - "(?i)ast_code"
+
+# Prior-resistance block: keep engineered history, drop past S/I/R results.
+microbial_resistance_drop:
+  - microbial_resistance_AST_pheno
+  - microbial_resistance_CLSI_2022_pheno
+  - microbial_resistance_AST_code
+  - microbial_resistance_AST_inequality
+  - microbial_resistance_AST_val1
+  - microbial_resistance_AST_val2
+  - microbial_resistance_prior_AST_DTS_shifted
+microbial_resistance_keep:
+  - microbial_resistance_organism
+  - microbial_resistance_antibiotic
+  - microbial_resistance_drug_code
+microbial_resistance_safe_patterns:
+  - "^microbial_resistance_(prior_|history_|count_|any_|window_|min_|max_|same_)"
+  - "^prior_resistance_"
+
+# Columns kept in the table that are not features.
+metadata_columns:
+  - site_id
+  - antibiotic
+  - culture_type
+  - ordering_mode
+  - y
+  - patient_id
+  - culture_time

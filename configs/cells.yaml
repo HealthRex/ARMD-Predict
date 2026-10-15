@@ -1,0 +1,50 @@
+# The 23 antibiotic x specimen x care-setting cells of the paper (Table 1).
+# Each cell is trained twice: "full" (all shared feature columns) and "lite"
+# (the short form: the blocks listed under lite_block_prefixes).
+#
+# Antibiotic names are the canonical names written by the harmonisation step.
+
+cells:
+  # Urine, inpatient
+  - {antibiotic: vancomycin,              culture: urine, setting: inpatient}
+  - {antibiotic: cefepime,                culture: urine, setting: inpatient}
+  - {antibiotic: ampicillin,              culture: urine, setting: inpatient}
+  - {antibiotic: piperacillin_tazobactam, culture: urine, setting: inpatient}
+  - {antibiotic: meropenem,               culture: urine, setting: inpatient}
+  - {antibiotic: gentamicin,              culture: urine, setting: inpatient}
+  - {antibiotic: ceftriaxone,             culture: urine, setting: inpatient}
+  # Urine, outpatient
+  - {antibiotic: ciprofloxacin,                 culture: urine, setting: outpatient}
+  - {antibiotic: amoxicillin_clavulanic_acid,   culture: urine, setting: outpatient}
+  - {antibiotic: nitrofurantoin,                culture: urine, setting: outpatient}
+  - {antibiotic: cefpodoxime,                   culture: urine, setting: outpatient}
+  - {antibiotic: cefazolin,                     culture: urine, setting: outpatient}
+  - {antibiotic: trimethoprim_sulfamethoxazole, culture: urine, setting: outpatient}
+  - {antibiotic: levofloxacin,                  culture: urine, setting: outpatient}
+  # Respiratory
+  - {antibiotic: ceftriaxone,  culture: resp, setting: inpatient}
+  - {antibiotic: levofloxacin, culture: resp, setting: outpatient}
+  # Blood, inpatient
+  - {antibiotic: ceftriaxone,             culture: blood, setting: inpatient}
+  - {antibiotic: cefepime,                culture: blood, setting: inpatient}
+  - {antibiotic: piperacillin_tazobactam, culture: blood, setting: inpatient}
+  - {antibiotic: gentamicin,              culture: blood, setting: inpatient}
+  - {antibiotic: meropenem,               culture: blood, setting: inpatient}
+  - {antibiotic: vancomycin,              culture: blood, setting: inpatient}
+  - {antibiotic: ampicillin,              culture: blood, setting: inpatient}
+
+# Short-form ("lite") variant: feature columns whose names start with one of
+# these block prefixes.
+lite_block_prefixes:
+  - demographics_
+  - ward_info_
+  - microbial_resistance_
+  - prior_resistance_
+  - prior_infect_org_
+  - prior_med_
+
+# Inclusion thresholds, checked on the pooled cell and again inside each of
+# the train, validation and test partitions.
+min_n: 500
+min_susceptible: 25
+min_resistant: 25

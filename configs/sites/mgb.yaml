@@ -1,0 +1,200 @@
+# Mass General Brigham.
+# File names are relative to <raw-dir>/mgb/.
+#
+# IMPORTANT: this configuration describes the 2026 MGB extraction used in the
+# paper, which follows the same "microbiology_cultures_*" layout as the other
+# three ARMD releases. The public ARMD-MGB release on PhysioNet uses a different
+# file layout ("*_deid_tj.csv") and different identifiers; it needs its own
+# configuration and is not read by this file as is.
+#
+# Notes
+#  - Every MGB timestamp is shifted per patient (columns end in "_shifted").
+#    Only within-patient differences are meaningful; the leakage guard removes
+#    any shifted timestamp from the feature columns.
+#  - MGB has nine ordering modes; the map below follows the CMS
+#    inpatient/outpatient definition (observation and ED stays are outpatient).
+#  - Comorbidity: the raw file carries AHRQ-CCSR strings in "category" and no
+#    per-diagnosis timing. Run `python -m armd_predict prepare-mgb` once to
+#    write microbiology_cultures_comorbidity_harmonized.csv (category ->
+#    comorbidity_component), which is the file read below.
+#  - Some orders map to more than one encounter, so encounter_id is part of the
+#    de-duplication key.
+
+site_id: mgb
+
+file_mappings:
+  cohort: "microbiology_cultures_cohort.csv"
+  demographics: "microbiology_cultures_demographics.csv"
+  ward_info: "microbiology_cultures_ward_info.csv"
+  comorbidity: "microbiology_cultures_comorbidity_harmonized.csv"
+  prior_med: "microbiology_cultures_prior_med_augmented.csv"
+  priorprocedures: "microbiology_cultures_priorprocedures.csv"
+  nursing_home_visits: "microbiology_cultures_nursing_home_visits_augmented.csv"
+  prior_infecting_organism: "microbiology_cultures_prior_infecting_organism_augmented.csv"
+  microbial_resistance: "microbiology_cultures_microbial_resistance_augmented.csv"
+  antibiotic_class_exposure: "microbiology_cultures_antibiotic_class_exposure_augmented.csv"
+  antibiotic_subtype_exposure: "microbiology_cultures_antibiotic_subtype_exposure_augmented.csv"
+  adi_scores: "microbiology_cultures_adi_scores.csv"
+  implied_susceptibility: "microbiology_cultures_cohort_implied_susceptibility.csv"
+  labs: "microbiology_cultures_labs.csv"
+  vitals: "microbiology_cultures_vitals.csv"
+
+column_mappings:
+  cohort:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    timestamp: "order_time_jittered_utc_shifted"
+    ordering_mode: "ordering_mode"
+    culture_type: "culture_description"
+    was_positive: "was_positive"
+    organism: "organism"
+    antibiotic: "antibiotic"
+    susceptibility: "susceptibility"
+  demographics:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    age: "age"
+    gender: "gender"
+  ward_info:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    timestamp: "order_time_jittered_utc_shifted"
+    hosp_ward_IP: "hosp_ward_IP"
+    hosp_ward_OP: "hosp_ward_OP"
+    hosp_ward_ER: "hosp_ward_ER"
+    hosp_ward_ICU: "hosp_ward_ICU"
+  comorbidity:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+  prior_med:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    medication_name: "medication_name"
+    medication_category: "medication_category"
+    time_to_culture: "medication_time_to_cultureTime"
+  priorprocedures:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    procedure_name: "procedure_description"
+    time_to_culture: "procedure_days_culture"
+  nursing_home_visits:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    time_to_culture: "nursing_home_visit_culture"
+  prior_infecting_organism:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    prior_organism: "prior_organism"
+    time_to_culture: "prior_infecting_organism_days_to_culture"
+  microbial_resistance:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    organism: "organism"
+    antibiotic: "antibiotic"
+    time_to_culture: "resistant_time_to_cultureTime"
+  antibiotic_class_exposure:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    antibiotic_class: "antibiotic_class"
+    time_to_culture: "medication_time_to_cultureTime"
+  antibiotic_subtype_exposure:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    antibiotic_subtype: "antibiotic_subtype"
+    time_to_culture: "medication_time_to_cultureTime"
+  adi_scores:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    timestamp: "order_time_jittered_utc_shifted"
+    adi_score: "adi_score"
+    adi_state_rank: "adi_state_rank"
+  implied_susceptibility:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    organism: "organism"
+    antibiotic: "antibiotic"
+    susceptibility: "susceptibility"
+    implied_susceptibility: "implied_susceptibility"
+  labs:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    period_day: "Period_Day"
+  vitals:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+
+label_policy:
+  strategy: single_column
+
+capabilities:
+  dedup_key:
+    - site_id
+    - encounter_id
+    - order_id
+    - organism
+    - antibiotic
+
+  has_demographics: true
+  has_ward_info: true
+  has_labs: true
+  has_vitals: true
+  has_comorbidity: true
+  has_prior_med: true
+  has_priorprocedures: true
+  has_nursing_home_visits: true
+  has_prior_infecting_organism: true
+  has_microbial_resistance: true
+  has_antibiotic_class_exposure: true
+  has_antibiotic_subtype_exposure: true
+  has_adi_scores: true
+  has_implied_susceptibility: true
+
+  ordering_mode_map:
+    "inpatient": Inpatient
+    "psych inpatient": Inpatient
+    "surgery admit": Inpatient
+    "outpatient": Outpatient
+    "emergency": Outpatient
+    "ed observation": Outpatient
+    "observation": Outpatient
+    "urgent care": Outpatient
+    "day surgery": Outpatient
+
+  # MGB writes gender as words; "Others" (a handful of rows) becomes missing.
+  missing_value_tokens: ["Null", "NULL", "null", "NaN", "NA", "N/A", ""]
+  value_maps:
+    demographics_gender:
+      "Female": 0
+      "Male": 1
+      "Others": null
+    demographics_age:
+      "18-24 years": "18-24"
+      "25-34 years": "25-34"
+      "35-44 years": "35-44"
+      "45-54 years": "45-54"
+      "55-64 years": "55-64"
+      "65-74 years": "65-74"
+      "75-84 years": "75-84"
+      "85-89 years": "85-89"
+      "above 90": "above 90"
+    nursing_home_visits_nursing_home_visit_culture:
+      "Null": null
+    adi_scores_adi_score:
+      "Null": null
+    adi_scores_adi_state_rank:
+      "Null": null

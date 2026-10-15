@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "armd-predict"
+version = "1.0.0"
+description = "Empiric antimicrobial-susceptibility models from the four ARMD sites: harmonisation, model tables, training, calibration and evaluation"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+# Versions used for the paper. XGBoost reproduces the published models
+# bit-for-bit only with the same version.
+dependencies = [
+    "numpy==2.3.5",
+    "pandas==2.3.3",
+    "scikit-learn==1.8.0",
+    "scipy==1.17.0",
+    "xgboost==3.1.3",
+    "pyarrow==23.0.0",
+    "pyyaml==6.0.3",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.0.2"]
+
+[tool.setuptools]
+packages = ["armd_predict"]

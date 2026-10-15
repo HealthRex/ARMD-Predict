@@ -1,0 +1,179 @@
+# Stanford Health Care (Stanford ARMD).
+# File names are relative to <raw-dir>/stanford/.
+#
+# Notes
+#  - prior_infecting_organism uses the April-2025 re-release file (singular
+#    "culture" in its name). The January-2025 file additionally carries 380
+#    same-day (day-0) rows; with the day-zero rule both give the same features.
+#  - The raw prior-infecting-organism offset column is spelled "..._culutre".
+#  - "Null" in ordering_mode is a missing marker, not a care setting; it is left
+#    out of ordering_mode_map on purpose (such rows go to neither cohort).
+
+site_id: stanford
+
+file_mappings:
+  cohort: "microbiology_cultures_cohort.csv"
+  demographics: "microbiology_cultures_demographics.csv"
+  ward_info: "microbiology_cultures_ward_info.csv"
+  labs: "microbiology_cultures_labs.csv"
+  vitals: "microbiology_cultures_vitals.csv"
+  comorbidity: "microbiology_cultures_comorbidity.csv"
+  prior_med: "microbiology_cultures_prior_med.csv"
+  priorprocedures: "microbiology_cultures_priorprocedures.csv"
+  nursing_home_visits: "microbiology_cultures_nursing_home_visits.csv"
+  prior_infecting_organism: "microbiology_culture_prior_infecting_organism.csv"
+  microbial_resistance: "microbiology_cultures_microbial_resistance.csv"
+  antibiotic_class_exposure: "microbiology_cultures_antibiotic_class_exposure.csv"
+  antibiotic_subtype_exposure: "microbiology_cultures_antibiotic_subtype_exposure.csv"
+  adi_scores: "microbiology_cultures_adi_scores.csv"
+  implied_susceptibility: "microbiology_cultures_implied_susceptibility.csv"
+
+column_mappings:
+  cohort:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    timestamp: "order_time_jittered_utc"
+    ordering_mode: "ordering_mode"
+    culture_type: "culture_description"
+    was_positive: "was_positive"
+    organism: "organism"
+    antibiotic: "antibiotic"
+    susceptibility: "susceptibility"
+  demographics:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    age: "age"
+    gender: "gender"
+  ward_info:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    timestamp: "order_time_jittered_utc"
+    hosp_ward_IP: "hosp_ward_IP"
+    hosp_ward_OP: "hosp_ward_OP"
+    hosp_ward_ER: "hosp_ward_ER"
+    hosp_ward_ICU: "hosp_ward_ICU"
+  labs:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    period_day: "Period_Day"
+  vitals:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+  comorbidity:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    comorbidity_component: "comorbidity_component"
+    start_days: "comorbidity_component_start_days_culture"
+    end_days: "comorbidity_component_end_days_culture"
+  prior_med:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    medication_name: "medication_name"
+    medication_category: "medication_category"
+    time_to_culture: "medication_time_to_culturetime"
+  priorprocedures:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    procedure_name: "procedure_name"
+    time_to_culture: "procedure_time_to_culturetime"
+  nursing_home_visits:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    time_to_culture: "nursing_home_visit_culture"
+  prior_infecting_organism:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    prior_organism: "prior_organism"
+    time_to_culture: "prior_infecting_organism_days_to_culutre"
+  microbial_resistance:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    organism: "organism"
+    antibiotic: "antibiotic"
+    time_to_culture: "resistant_time_to_culturetime"
+  antibiotic_class_exposure:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    antibiotic_class: "antibiotic_class"
+    time_to_culture: "time_to_culturetime"
+  antibiotic_subtype_exposure:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    antibiotic_subtype: "antibiotic_subtype"
+    time_to_culture: "medication_time_to_culturetime"
+  adi_scores:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    timestamp: "order_time_jittered_utc"
+    adi_score: "adi_score"
+    adi_state_rank: "adi_state_rank"
+  implied_susceptibility:
+    patient_id: "anon_id"
+    encounter_id: "pat_enc_csn_id_coded"
+    order_id: "order_proc_id_coded"
+    organism: "organism"
+    antibiotic: "antibiotic"
+    susceptibility: "susceptibility"
+    implied_susceptibility: "implied_susceptibility"
+
+label_policy:
+  strategy: single_column
+
+capabilities:
+  has_demographics: true
+  has_ward_info: true
+  has_labs: true
+  has_vitals: true
+  has_comorbidity: true
+  has_prior_med: true
+  has_priorprocedures: true
+  has_nursing_home_visits: true
+  has_prior_infecting_organism: true
+  has_microbial_resistance: true
+  has_antibiotic_class_exposure: true
+  has_antibiotic_subtype_exposure: true
+  has_adi_scores: true
+  has_implied_susceptibility: true
+
+  ordering_mode_map:
+    "inpatient": Inpatient
+    "outpatient": Outpatient
+
+  # Value harmonisation, applied to the prefixed feature columns. A YAML null
+  # maps a token to missing. Canonical gender coding: 0 = female, 1 = male.
+  missing_value_tokens: ["Null", "NULL", "null", "NaN", "NA", "N/A", ""]
+  value_maps:
+    demographics_gender:
+      "0": 0
+      "1": 1
+      "Null": null
+    demographics_age:
+      "18-24 years": "18-24"
+      "25-34 years": "25-34"
+      "35-44 years": "35-44"
+      "45-54 years": "45-54"
+      "55-64 years": "55-64"
+      "65-74 years": "65-74"
+      "75-84 years": "75-84"
+      "85-89 years": "85-89"
+      "above 90": "above 90"
+    nursing_home_visits_nursing_home_visit_culture:
+      "Null": null
+    adi_scores_adi_score:
+      "Null": null
+    adi_scores_adi_state_rank:
+      "Null": null

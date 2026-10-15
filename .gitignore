@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+build/
+dist/
+
+# Never commit data, model tables, outputs or trained models
+data/
+raw/
+cdm/
+outputs/
+results/
+*.parquet
+*.csv
+*.pkl
+*.joblib
+models/**/*.json
+!models/README.md
+
+# Editors and OS
+.DS_Store
+.idea/
+.vscode/

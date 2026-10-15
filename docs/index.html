@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ARMD-Predict</title>
+<meta name="description" content="ARMD-Predict estimates, at culture ordering, the probability that an organism recovered from the culture will be susceptible to each candidate antibiotic: a patient-specific antibiogram trained on four U.S. health systems. Research prototype, not for clinical decision-making.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A1426" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://healthrex.github.io/ARMD-Predict/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ARMD-Predict">
+<meta property="og:title" content="ARMD-Predict: predicting antibiotic resistance before culture results">
+<meta property="og:description" content="A patient-specific antibiogram at culture ordering, trained on 7.4 million culture–antibiotic results from four U.S. health systems. Research prototype.">
+<meta property="og:url" content="https://healthrex.github.io/ARMD-Predict/">
+<meta property="og:image" content="https://healthrex.github.io/ARMD-Predict/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ARMD-Predict logo with the title Predicting antibiotic resistance before culture results">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --paper: #F8FAFC;
+  --paper-raised: #FFFFFF;
+  --paper-sunken: #EEF2F7;
+  --paper-tint: #EEF8FC;
+  --ink: #0B1F3F;
+  --ink-soft: #3B4A60;
+  --ink-faint: #5E6B7E;
+  --rule: rgba(8, 42, 94, 0.10);
+  --rule-strong: rgba(8, 42, 94, 0.20);
+  --navy: #082A5E;
+  --teal: #28C7C9;
+  --teal-strong: #0B7E80;
+  --teal-wash: rgba(40, 199, 201, 0.12);
+  --purple: #7457E8;
+  --purple-strong: #5A3FD9;
+  --purple-wash: rgba(116, 87, 232, 0.10);
+  --mark-model: #0E9C9E;
+  --mark-rule: #8A96A8;
+  --btn-bg: #082A5E;
+  --btn-ink: #FFFFFF;
+  --btn-bg-hover: #0E3B80;
+  --caution-bg: #FFF8EB;
+  --caution-rule: #E3A93C;
+  --code-bg: #F1F4F9;
+  --figure-bg: #FFFFFF;
+  --shadow: 0 1px 2px rgba(8, 42, 94, 0.05), 0 10px 30px rgba(8, 42, 94, 0.06);
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --wrap: 1120px;
+  --gutter: 24px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0A1426;
+    --paper-raised: #0F1C33;
+    --paper-sunken: #142441;
+    --paper-tint: #0E2240;
+    --ink: #E8EEF7;
+    --ink-soft: #B6C2D4;
+    --ink-faint: #8D9AB0;
+    --rule: rgba(255, 255, 255, 0.09);
+    --rule-strong: rgba(255, 255, 255, 0.17);
+    --teal-strong: #3FD0D2;
+    --teal-wash: rgba(40, 199, 201, 0.14);
+    --purple-strong: #A291F6;
+    --purple-wash: rgba(116, 87, 232, 0.18);
+    --mark-model: #13A4A6;
+    --mark-rule: #6F7D93;
+    --btn-bg: #28C7C9;
+    --btn-ink: #082A5E;
+    --btn-bg-hover: #5ED8DA;
+    --caution-bg: #261E10;
+    --caution-rule: #C9952F;
+    --code-bg: #0C182D;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0A1426; --paper-raised: #0F1C33; --paper-sunken: #142441; --paper-tint: #0E2240;
+  --ink: #E8EEF7; --ink-soft: #B6C2D4; --ink-faint: #8D9AB0;
+  --rule: rgba(255, 255, 255, 0.09); --rule-strong: rgba(255, 255, 255, 0.17);
+  --teal-strong: #3FD0D2; --teal-wash: rgba(40, 199, 201, 0.14);
+  --purple-strong: #A291F6; --purple-wash: rgba(116, 87, 232, 0.18);
+  --mark-model: #13A4A6; --mark-rule: #6F7D93;
+  --btn-bg: #28C7C9; --btn-ink: #082A5E; --btn-bg-hover: #5ED8DA;
+  --caution-bg: #261E10; --caution-rule: #C9952F; --code-bg: #0C182D;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px rgba(0, 0, 0, 0.25);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { max-width: 100%; height: auto; }
+a { color: var(--teal-strong); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; border-radius: 4px; }
+p { margin: 0 0 1em; }
+h1, h2, h3 { margin: 0; }
+sup { font-size: 0.68em; line-height: 0; }
+.nw { white-space: nowrap; }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 16px; top: 12px; z-index: 100; background: var(--paper-raised); padding: 8px 12px; border-radius: 8px; }
+
+/* ---------- nav ---------- */
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: color-mix(in srgb, var(--paper) 86%, transparent);
+  backdrop-filter: saturate(160%) blur(10px);
+  -webkit-backdrop-filter: saturate(160%) blur(10px);
+  border-bottom: 1px solid var(--rule);
+}
+.nav .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+.brand img { width: 40px; height: auto; }
+.nav-links { display: flex; gap: 2px; margin: 0 0 0 auto; padding: 0; list-style: none; }
+.nav-links a { display: block; white-space: nowrap; padding: 6px 9px; border-radius: 8px; color: var(--ink-soft); font-size: 14px; font-weight: 500; text-decoration: none; }
+.nav-links a:hover { color: var(--ink); background: var(--paper-sunken); }
+.nav-cta { display: flex; gap: 8px; }
+.nav-cta a { font-size: 13.5px; padding: 7px 12px; }
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 18px; border-radius: 12px;
+  font-size: 14.5px; font-weight: 600; line-height: 1.2; text-decoration: none;
+  border: 1px solid var(--rule-strong); color: var(--ink); background: var(--paper-raised);
+  white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
+}
+.btn:hover { border-color: var(--teal-strong); transform: translateY(-1px); }
+.btn svg { width: 17px; height: 17px; flex: none; }
+.btn-primary { background: var(--btn-bg); color: var(--btn-ink); border-color: transparent; }
+.btn-primary:hover { background: var(--btn-bg-hover); border-color: transparent; }
+.btn .tag { font-family: var(--font-mono); font-size: 11px; font-weight: 500; padding: 2px 6px; border-radius: 6px; background: var(--purple-wash); color: var(--purple-strong); }
+.btn-primary .tag { background: rgba(255,255,255,.18); color: inherit; }
+
+/* ---------- hero ---------- */
+.hero { position: relative; padding: 64px 0 40px; overflow: hidden; }
+.hero::before {
+  content: ""; position: absolute; inset: -20% -10% auto auto; width: 720px; height: 720px;
+  background: radial-gradient(closest-side, var(--teal-wash), transparent 70%);
+  pointer-events: none;
+}
+.hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr); gap: 48px; align-items: center; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--teal-strong); margin: 0 0 18px;
+}
+.eyebrow::before { content: ""; width: 18px; height: 2px; border-radius: 2px; background: var(--teal); }
+.hero h1 {
+  font-family: var(--font-display); font-weight: 500; font-optical-sizing: auto;
+  font-size: clamp(32px, 4.6vw, 54px); line-height: 1.07; letter-spacing: -0.015em;
+}
+.hero h1 .name { color: var(--purple-strong); }
+.hero h1 em { font-style: italic; color: var(--teal-strong); font-weight: 500; }
+.authors { margin: 26px 0 0; font-size: 14.5px; line-height: 1.75; color: var(--ink-soft); max-width: 62ch; }
+.authors sup { color: var(--ink-faint); }
+.affils { margin: 12px 0 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-faint); max-width: 64ch; }
+.affils span { display: inline-block; margin-right: 14px; }
+.notes { margin: 6px 0 0; font-size: 13px; color: var(--ink-faint); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.hero-art { position: relative; }
+.hero-art svg { display: block; width: 100%; height: auto; }
+
+/* diagram tokens */
+.d-card { fill: var(--paper-raised); stroke: var(--rule-strong); stroke-width: 1; }
+.d-card-dash { fill: var(--paper-raised); stroke: var(--purple); stroke-width: 1.25; stroke-dasharray: 5 4; }
+.d-model { fill: var(--paper-tint); stroke: var(--teal); stroke-width: 1.25; }
+.d-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; fill: var(--teal-strong); font-weight: 500; }
+.d-label-p { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em; fill: var(--purple-strong); font-weight: 500; }
+.d-title { font-family: var(--font-sans); font-size: 16px; font-weight: 600; fill: var(--ink); }
+.d-title-s { font-family: var(--font-sans); font-size: 14.5px; font-weight: 600; fill: var(--ink); }
+.d-text { font-family: var(--font-sans); font-size: 13.5px; fill: var(--ink-soft); }
+.d-small { font-family: var(--font-sans); font-size: 12px; fill: var(--ink-faint); }
+.d-arrow { stroke: var(--ink-faint); stroke-width: 1.5; fill: none; }
+.d-arrow-p { stroke: var(--purple); stroke-width: 1.5; fill: none; }
+.d-head { fill: var(--ink-faint); }
+.d-head-p { fill: var(--purple); }
+.d-chip-t { fill: var(--teal); }
+.d-chip-p { fill: var(--purple); }
+.d-track { fill: var(--paper-sunken); }
+.d-bar { fill: var(--teal); transform-box: fill-box; transform-origin: left center; }
+@media (prefers-reduced-motion: no-preference) {
+  .d-bar { animation: grow 1.1s cubic-bezier(.2,.7,.2,1) both; }
+  .d-bar:nth-of-type(2) { animation-delay: .08s; }
+  @keyframes grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+}
+
+/* ---------- stats ---------- */
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 44px 0 0; border: 1px solid var(--rule); border-radius: 18px; background: var(--paper-raised); box-shadow: var(--shadow); overflow: hidden; }
+.stat { padding: 20px 22px; border-left: 1px solid var(--rule); }
+.stat:first-child { border-left: 0; }
+.stat .v { display: block; font-size: 30px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); }
+.stat .l { display: block; margin-top: 4px; font-size: 13.5px; color: var(--ink-faint); line-height: 1.4; }
+
+/* ---------- sections ---------- */
+section { padding: 76px 0 8px; scroll-margin-top: 64px; }
+.section-head { max-width: 760px; margin-bottom: 28px; }
+.section-head h2 {
+  font-family: var(--font-display); font-weight: 500; font-optical-sizing: auto;
+  font-size: clamp(27px, 3.2vw, 38px); line-height: 1.15; letter-spacing: -0.01em;
+}
+.section-head h2 em { color: var(--teal-strong); }
+.section-head p { margin: 14px 0 0; font-size: 17px; color: var(--ink-soft); }
+h3 { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+.prose { max-width: 72ch; color: var(--ink-soft); }
+.prose strong { color: var(--ink); font-weight: 600; }
+.sub { margin-top: 56px; }
+.sub > h3 { margin-bottom: 8px; }
+.sub > .lede { max-width: 72ch; color: var(--ink-soft); margin-bottom: 20px; }
+
+.card { background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 18px; padding: 24px; box-shadow: var(--shadow); }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+
+/* overview comparison */
+.compare { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 32px; }
+.compare .card h3 { font-size: 17px; margin: 8px 0 8px; }
+.compare .card p { margin: 0; color: var(--ink-soft); font-size: 15.5px; }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; }
+.pill-n { background: var(--paper-sunken); color: var(--ink-faint); }
+.pill-t { background: var(--teal-wash); color: var(--teal-strong); }
+.pill-p { background: var(--purple-wash); color: var(--purple-strong); }
+.mini-bars { margin-top: 16px; display: grid; gap: 8px; }
+.mini-bars div { height: 8px; border-radius: 4px; background: var(--paper-sunken); position: relative; overflow: hidden; }
+.mini-bars div::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 4px; background: var(--c, var(--mark-rule)); }
+
+/* components */
+.comp { position: relative; }
+.comp .num { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); letter-spacing: .08em; }
+.comp h3 { margin: 6px 0 10px; }
+.comp p { color: var(--ink-soft); font-size: 15.5px; }
+.comp ul { margin: 0; padding-left: 18px; color: var(--ink-soft); font-size: 15px; }
+.comp li { margin: 4px 0; }
+.comp-t { border-top: 3px solid var(--teal); }
+.comp-p { border-top: 3px solid var(--purple); }
+
+.principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.principle { padding: 18px 20px; border-radius: 14px; background: var(--paper-tint); border: 1px solid var(--rule); }
+.principle h4 { margin: 0 0 6px; font-size: 15.5px; font-weight: 600; }
+.principle p { margin: 0; font-size: 14.5px; color: var(--ink-soft); line-height: 1.6; }
+
+/* figures */
+figure { margin: 0; }
+.fig { background: var(--figure-bg); border: 1px solid var(--rule); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); }
+.fig img { display: block; width: 100%; height: auto; margin: 0 auto; }
+.fig-plain { background: var(--paper-raised); }
+figcaption { margin-top: 12px; font-size: 14px; line-height: 1.6; color: var(--ink-faint); max-width: 80ch; }
+figcaption strong { color: var(--ink-soft); font-weight: 600; }
+.fig-narrow { max-width: 880px; }
+
+/* data */
+.sites { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.site { display: flex; flex-direction: column; gap: 4px; }
+.site .where { font-size: 13.5px; color: var(--ink-faint); }
+.site h3 { font-size: 17px; }
+.site dl { margin: 12px 0 14px; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 14px; }
+.site dt { color: var(--ink-faint); white-space: nowrap; }
+.site dd { margin: 0; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; }
+.site .ds { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 14px; }
+.site .ds a { font-weight: 600; word-break: break-word; }
+.site .ds small { display: block; color: var(--ink-faint); font-size: 12.5px; margin-top: 2px; }
+.note { margin-top: 18px; padding: 14px 18px; border-radius: 12px; background: var(--paper-tint); border: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-soft); max-width: 90ch; }
+
+/* results tiles */
+.tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 24px; }
+.tile { padding: 18px 20px; border-radius: 14px; background: var(--paper-raised); border: 1px solid var(--rule); }
+.tile .v { display: block; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+.tile .l { display: block; margin-top: 6px; font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
+.tile .l small { display: block; color: var(--ink-faint); font-size: 12.5px; }
+
+details.table { margin-top: 16px; border: 1px solid var(--rule); border-radius: 14px; background: var(--paper-raised); }
+details.table summary { cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 15px; list-style: none; display: flex; align-items: center; gap: 10px; }
+details.table summary::-webkit-details-marker { display: none; }
+details.table summary::before { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--ink-faint); border-bottom: 2px solid var(--ink-faint); transform: rotate(-45deg); transition: transform .15s ease; }
+details.table[open] summary::before { transform: rotate(45deg); }
+.table-scroll { overflow-x: auto; padding: 0 18px 18px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th { font-weight: 600; color: var(--ink-faint); font-size: 12.5px; text-transform: uppercase; letter-spacing: .05em; }
+td.n { text-align: right; font-variant-numeric: tabular-nums; }
+th.n { text-align: right; }
+tr.grp td { font-weight: 600; color: var(--ink); background: var(--paper-tint); }
+tr.med td { color: var(--ink-faint); font-style: italic; }
+
+/* comparison bars */
+.cmp-wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 20px; align-items: start; }
+.cmp-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13.5px; color: var(--ink-soft); margin-bottom: 16px; }
+.key { display: inline-block; width: 18px; height: 10px; border-radius: 3px; margin-right: 7px; vertical-align: -1px; }
+.key-model { background: var(--mark-model); }
+.key-rule { background: var(--mark-rule); }
+.cmp-group { margin-bottom: 18px; }
+.cmp-title { font-size: 14.5px; font-weight: 600; margin-bottom: 8px; }
+.cmp-title span { font-weight: 400; color: var(--ink-faint); }
+.cmp-row { display: grid; grid-template-columns: 92px minmax(0, 1fr) 50px; align-items: center; gap: 10px; margin: 6px 0; font-size: 13.5px; color: var(--ink-soft); }
+.cmp-track { position: relative; height: 18px; border-left: 1px solid var(--rule-strong);
+  background-image: linear-gradient(to right, var(--rule) 1px, transparent 1px);
+  background-size: 33.333% 100%; }
+.cmp-bar { position: absolute; left: 0; top: 2px; bottom: 2px; width: calc((var(--v) - 0.5) / 0.3 * 100%); border-radius: 0 4px 4px 0; }
+.cmp-bar.model { background: var(--mark-model); }
+.cmp-bar.rule { background: var(--mark-rule); }
+.cmp-val { font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 500; text-align: right; }
+.cmp-axis { display: grid; grid-template-columns: 92px minmax(0, 1fr) 50px; gap: 10px; font-size: 12px; color: var(--ink-faint); }
+.cmp-axis .ticks { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; }
+.cmp-axis .ticks span:first-child { transform: translateX(-30%); }
+.cmp-axis .ticks span:last-child { transform: translateX(30%); }
+.facts { display: grid; gap: 12px; }
+.fact { padding: 14px 16px; border-radius: 12px; background: var(--paper-tint); border: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; }
+.fact b { color: var(--ink); font-weight: 600; }
+
+/* local antibiogram */
+.formula {
+  margin: 18px 0; padding: 16px 18px; border-radius: 12px; background: var(--code-bg); border: 1px solid var(--rule);
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.9; color: var(--ink);
+}
+.formula span.term { white-space: nowrap; }
+.formula .t { color: var(--teal-strong); }
+.formula .p { color: var(--purple-strong); }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.steps li { counter-increment: s; position: relative; padding: 2px 0 2px 42px; color: var(--ink-soft); font-size: 15.5px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 600; color: var(--teal-strong); background: var(--teal-wash); }
+
+/* caution */
+.caution { border-left: 4px solid var(--caution-rule); background: var(--caution-bg); border-radius: 0 14px 14px 0; padding: 20px 24px; }
+.caution h3 { font-size: 18px; margin-bottom: 6px; }
+.caution p { margin: 0; color: var(--ink-soft); }
+.limits { margin: 20px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 28px; }
+.limits li { position: relative; padding-left: 20px; color: var(--ink-soft); font-size: 15px; line-height: 1.6; }
+.limits li::before { content: ""; position: absolute; left: 2px; top: 0.62em; width: 7px; height: 7px; border-radius: 50%; background: var(--caution-rule); }
+
+/* citation */
+.cite { position: relative; }
+.cite pre {
+  margin: 0; padding: 20px 22px; padding-top: 52px; border-radius: 14px; background: var(--code-bg); border: 1px solid var(--rule);
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: var(--ink); overflow-x: auto;
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.cite .copy {
+  position: absolute; top: 12px; right: 12px; font-family: var(--font-sans);
+  padding: 7px 12px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer;
+  background: var(--paper-raised); color: var(--ink); border: 1px solid var(--rule-strong);
+}
+.cite .copy:hover { border-color: var(--teal-strong); }
+.cite-note { margin-top: 12px; font-size: 14px; color: var(--ink-faint); }
+
+/* team */
+.team { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 16px; }
+.team .card h3 { font-size: 16px; margin-bottom: 10px; }
+.team ul { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: 20px; font-size: 14.5px; color: var(--ink-soft); }
+.team .single ul { columns: 1; }
+.team li { padding: 3px 0; break-inside: avoid; }
+.team-stack { display: grid; gap: 16px; }
+details.affil { margin-top: 18px; font-size: 14px; color: var(--ink-faint); }
+details.affil summary { cursor: pointer; color: var(--ink-soft); font-weight: 500; }
+details.affil ol { margin: 10px 0 0; padding-left: 22px; line-height: 1.7; }
+
+/* footer */
+footer { margin-top: 88px; border-top: 1px solid var(--rule); padding: 36px 0 48px; color: var(--ink-faint); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; }
+footer .brand { font-size: 15px; }
+footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+footer nav a { color: var(--ink-soft); text-decoration: none; }
+footer nav a:hover { color: var(--teal-strong); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1120px) {
+  .nav-links { display: none; }
+  .nav-cta { margin-left: auto; }
+}
+@media (max-width: 1020px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .hero-art { max-width: 560px; }
+  .sites, .tiles, .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .principles { grid-template-columns: minmax(0, 1fr); }
+  .team { grid-template-columns: minmax(0, 1fr); }
+  .cmp-wrap { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  :root { --gutter: 16px; }
+  body { font-size: 16px; }
+  .hero { padding: 40px 0 28px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat:nth-child(3) { border-left: 0; }
+  .stat:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  .stat .v { font-size: 25px; }
+  .compare, .grid-2, .limits { grid-template-columns: minmax(0, 1fr); }
+  section { padding-top: 60px; }
+  .fig { padding: 10px; border-radius: 12px; }
+  .card { padding: 20px; }
+  .team ul { columns: 1; }
+  .nav-cta .hide-sm { display: none; }
+  .brand span { font-size: 15px; }
+  .btn { padding: 10px 14px; font-size: 14px; }
+}
+@media (max-width: 460px) {
+  .sites, .grid-4 { grid-template-columns: minmax(0, 1fr); }
+  .tiles { gap: 10px; }
+  .tile { padding: 14px 14px; }
+  .tile .v { font-size: 26px; }
+  .tile .l { font-size: 13px; }
+  table th:nth-child(3), table td:nth-child(3) { display: none; }
+  table { font-size: 13px; }
+  th, td { padding: 8px 6px; }
+  td:first-child { white-space: normal; }
+  .table-scroll { padding: 0 10px 12px; }
+  .fig { padding: 6px; }
+  .cmp-row, .cmp-axis { grid-template-columns: 70px minmax(0, 1fr) 44px; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="ARMD-Predict, back to top">
+      <img src="assets/logo.svg" alt="" width="40" height="25">
+      <span>ARMD-Predict</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#local">Local antibiogram</a></li>
+      <li><a href="#limitations">Limitations</a></li>
+      <li><a href="#citation">Cite</a></li>
+    </ul>
+    <div class="nav-cta">
+      <!-- TODO: replace XXXX.XXXXX with the arXiv identifier once the preprint is posted -->
+      <a class="btn hide-sm" href="https://arxiv.org/abs/XXXX.XXXXX">Paper</a>
+      <a class="btn" href="https://github.com/HealthRex/ARMD-Predict">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Preprint 2026 · Research prototype</p>
+      <h1><span class="name">ARMD-Predict</span>: <span class="nw">multi-site</span> machine learning to <em>predict antibiotic resistance before culture results</em></h1>
+
+      <p class="authors">
+        Fateme Nateghi Haredasht<sup>1,*,†</sup>, Nicholas P. Marshall<sup>1,*</sup>, Wenyuan Chen<sup>1</sup>, Lauren N. Cooper<sup>2</sup>, Ziming Wei<sup>3</sup>, Harrison Konsker<sup>1</sup>, Jacob S. Chen<sup>1</sup>, Michael Klompas<sup>3,4</sup>, Cara McKenna<sup>3,4</sup>, Richard J. Medford<sup>2,5</sup>, Sanjat Kanjilal<sup>3</sup>, Austin J. Schoeffler<sup>1</sup>, Stephen P. Ma<sup>1</sup>, Niaz Banaei<sup>1</sup>, Steven M. Asch<sup>1</sup>, Amy Chang<sup>1</sup>, Stanley C. Deresinski<sup>1</sup>, Mary K. Goldstein<sup>1</sup>, Robert Tibshirani<sup>1</sup>, Jonathan H. Chen<sup>1</sup>
+      </p>
+      <p class="affils">
+        <span><sup>1</sup>Stanford University</span> <span><sup>2</sup>UT Southwestern Medical Center</span> <span><sup>3</sup>Harvard Medical School and Harvard Pilgrim Health Care Institute</span> <span><sup>4</sup>Brigham and Women's Hospital</span> <span><sup>5</sup>East Carolina University</span>
+      </p>
+      <p class="notes"><sup>*</sup>Contributed equally. <sup>†</sup>Corresponding author.</p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://arxiv.org/abs/XXXX.XXXXX">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
+          Paper <span class="tag">arXiv</span>
+        </a>
+        <a class="btn" href="https://github.com/HealthRex/ARMD-Predict">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
+          Code
+        </a>
+        <a class="btn" href="https://armd-predict.stanford.edu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>
+          Web app
+        </a>
+        <a class="btn" href="#data">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+          Data
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <svg viewBox="0 0 520 450" role="img" aria-labelledby="art-title art-desc">
+        <title id="art-title">How ARMD-Predict produces a patient-specific antibiogram</title>
+        <desc id="art-desc">A patient record from before the culture order (prior resistant culture, recent antibiotic exposure, age band, sex and care setting, Area Deprivation Index) flows into a pooled four-site model with monotonic constraints. The model outputs a probability of susceptibility for each candidate antibiotic. An optional local antibiogram re-anchors each estimate to the hospital's own resistance rate without changing the ranking. The bars are illustrative.</desc>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-head" d="M0 0 10 5 0 10z"/></marker>
+          <marker id="ahp" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="d-head-p" d="M0 0 10 5 0 10z"/></marker>
+        </defs>
+
+        <!-- patient record -->
+        <rect class="d-card" x="8" y="16" width="252" height="200" rx="14"/>
+        <text class="d-label" x="28" y="44">BEFORE THE ORDER</text>
+        <text class="d-title" x="28" y="67">Patient record</text>
+        <rect class="d-chip-p" x="28" y="91" width="10" height="10" rx="3"/>
+        <text class="d-text" x="48" y="100">Prior resistant culture</text>
+        <rect class="d-chip-p" x="28" y="119" width="10" height="10" rx="3"/>
+        <text class="d-text" x="48" y="128">Recent antibiotic exposure</text>
+        <rect class="d-chip-t" x="28" y="147" width="10" height="10" rx="3"/>
+        <text class="d-text" x="48" y="156">Age band, sex, care setting</text>
+        <rect class="d-chip-t" x="28" y="175" width="10" height="10" rx="3"/>
+        <text class="d-text" x="48" y="184">Area Deprivation Index</text>
+
+        <path class="d-arrow" d="M266 116 H312" marker-end="url(#ah)"/>
+
+        <!-- model -->
+        <rect class="d-model" x="318" y="30" width="194" height="172" rx="16"/>
+        <image href="assets/logo.svg" x="370" y="44" width="90" height="56"/>
+        <text class="d-title-s" x="415" y="128" text-anchor="middle">Pooled four-site model</text>
+        <text class="d-small" x="415" y="150" text-anchor="middle">monotonic constraints</text>
+        <text class="d-small" x="415" y="168" text-anchor="middle">no site identity</text>
+        <text class="d-small" x="415" y="186" text-anchor="middle">one model per antibiotic</text>
+
+        <path class="d-arrow" d="M415 206 V238" marker-end="url(#ah)"/>
+
+        <!-- output -->
+        <rect class="d-card" x="194" y="244" width="318" height="196" rx="14"/>
+        <text class="d-label" x="214" y="272">OUTPUT</text>
+        <text class="d-title" x="214" y="295">Patient-specific antibiogram</text>
+        <text class="d-small" x="214" y="314">Probability of susceptibility (illustrative)</text>
+        <g>
+          <text class="d-text" x="214" y="345">Ceftriaxone</text>
+          <rect class="d-track" x="318" y="335" width="174" height="11" rx="5.5"/>
+          <rect class="d-bar" x="318" y="335" width="104" height="11" rx="5.5"/>
+          <text class="d-text" x="214" y="371">Cefepime</text>
+          <rect class="d-track" x="318" y="361" width="174" height="11" rx="5.5"/>
+          <rect class="d-bar" x="318" y="361" width="138" height="11" rx="5.5" style="animation-delay:.08s"/>
+          <text class="d-text" x="214" y="397">Gentamicin</text>
+          <rect class="d-track" x="318" y="387" width="174" height="11" rx="5.5"/>
+          <rect class="d-bar" x="318" y="387" width="122" height="11" rx="5.5" style="animation-delay:.16s"/>
+          <text class="d-text" x="214" y="423">Meropenem</text>
+          <rect class="d-track" x="318" y="413" width="174" height="11" rx="5.5"/>
+          <rect class="d-bar" x="318" y="413" width="164" height="11" rx="5.5" style="animation-delay:.24s"/>
+        </g>
+
+        <!-- local antibiogram -->
+        <rect class="d-card-dash" x="8" y="282" width="158" height="124" rx="14"/>
+        <text class="d-label-p" x="24" y="308">OPTIONAL</text>
+        <text class="d-title-s" x="24" y="330">Local</text>
+        <text class="d-title-s" x="24" y="348">antibiogram</text>
+        <text class="d-small" x="24" y="372">re-anchors each</text>
+        <text class="d-small" x="24" y="388">estimate; ranking kept</text>
+        <path class="d-arrow-p" d="M170 344 H189" marker-end="url(#ahp)"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="stats" role="list">
+      <div class="stat" role="listitem"><span class="v">7.4 million</span><span class="l">culture–antibiotic results</span></div>
+      <div class="stat" role="listitem"><span class="v">415,952</span><span class="l">culture orders</span></div>
+      <div class="stat" role="listitem"><span class="v">241,227</span><span class="l">patients</span></div>
+      <div class="stat" role="listitem"><span class="v">4</span><span class="l">U.S. health systems</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ================= OVERVIEW ================= -->
+<section id="overview">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Overview</p>
+      <h2>A patient-specific antibiogram, <em>at the moment a culture is ordered</em></h2>
+    </div>
+    <div class="prose">
+      <p>Clinicians often choose empiric antibiotics 24 to 72 hours before culture and susceptibility results are available. During that interval they rely on the hospital antibiogram: the share of recovered isolates that were susceptible to each antibiotic, reported once for all patients.</p>
+      <p><strong>ARMD-Predict estimates the same quantity for one patient.</strong> From information recorded before the order, it estimates the probability that an organism recovered from the culture will be susceptible to each candidate antibiotic. The models were trained on 7.4 million culture–antibiotic results from 415,952 culture orders in 241,227 patients at Stanford Health Care, East Carolina University Health (ECUH), UT Southwestern Medical Center (UTSW) and Mass General Brigham (MGB). A secondary hierarchical model predicts the organism and resistance phenotypes aligned with the 2024 IDSA guidance.</p>
+    </div>
+
+    <div class="compare">
+      <div class="card">
+        <span class="pill pill-n">Hospital antibiogram</span>
+        <h3>One number for every patient</h3>
+        <p>For ceftriaxone in inpatient urine cultures, the training-period antibiogram assigned 13.6% resistance to every patient, whatever their history. It cannot separate resistant from susceptible orders.</p>
+        <div class="mini-bars" aria-hidden="true">
+          <div style="--w:86%"></div><div style="--w:86%"></div><div style="--w:86%"></div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="pill pill-t">ARMD-Predict</span>
+        <h3>An estimate for this patient</h3>
+        <p>The estimate draws on the patient's own record: earlier resistant cultures, recent antibiotics, care setting, age band and neighborhood deprivation. Two patients on the same ward can receive different estimates for the same antibiotic.</p>
+        <div class="mini-bars" aria-hidden="true">
+          <div style="--w:94%;--c:var(--mark-model)"></div><div style="--w:71%;--c:var(--mark-model)"></div><div style="--w:88%;--c:var(--mark-model)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">How it works</p>
+      <h2>Two components built on one set of <em><span class="nw">pre-order</span> features</em></h2>
+      <p>Both components use only information recorded before the culture order: demographics, care setting, prior resistance and infection, prior antibiotic exposure, prior procedures, comorbidities, laboratory values and the Area Deprivation Index.</p>
+    </div>
+
+    <div class="grid-2">
+      <article class="card comp comp-t">
+        <span class="num">COMPONENT 1</span>
+        <h3>Empiric susceptibility</h3>
+        <p>One XGBoost model per antibiotic, specimen and care setting returns the probability that the organisms recovered from the order are susceptible to that antibiotic.</p>
+        <ul>
+          <li>23 pooled four-site models: 7 inpatient urine, 7 outpatient urine, 7 inpatient blood and 2 respiratory.</li>
+          <li>Released models omit site identity; a site-agnostic pooled model performed nearly identically to a site-aware one.</li>
+          <li>The public web app uses a short form restricted to six feature blocks a clinician can report at ordering.</li>
+        </ul>
+      </article>
+      <article class="card comp comp-p">
+        <span class="num">COMPONENT 2</span>
+        <h3>Organism and resistance phenotype</h3>
+        <p>A three-stage hierarchy decomposes the pre-culture question into Gram class, organism identity and organism-specific resistance.</p>
+        <ul>
+          <li>Gram stain: pooled held-out AUROC 0.72.</li>
+          <li>Organism identification: the 20 most frequent organisms per specimen and setting, plus Other.</li>
+          <li>30 phenotype models aligned with the 2024 IDSA guidance (ESBL, AmpC, CRE and difficult-to-treat <i>P. aeruginosa</i> proxies), with MRSA and VRE as Gram-positive complements. AUROC ranged from 0.519 to 0.834, evaluated given the observed organism.</li>
+        </ul>
+      </article>
+    </div>
+
+    <div class="sub">
+      <figure class="fig fig-narrow">
+        <a href="assets/framework.png" title="Open the full-size figure"><img src="assets/framework.png" width="1397" height="1149" loading="lazy" alt="ARMD-Predict framework diagram. Inputs: patient features recorded before the culture order (demographics, prior resistance and infection, prior antibiotic exposure, laboratory values, Area Deprivation Index and care setting) from four sites: Stanford, ECUH, UTSW and MGB. Two parallel pipelines. Part 1, empiric susceptibility per antibiotic: a pooled four-site XGBoost with no site indicator, with urine, blood and respiratory models, giving a calibrated probability of susceptibility per antibiotic. Part 2, organism and resistance phenotype, IDSA-aligned: stage 1 Gram stain, stage 2 organism identification (top 20 plus Other), stage 3 thirty IDSA-aligned phenotype models (ESBL, AmpC, CRE, DTR-Pa, MRSA, VRE), giving organism-specific resistance phenotypes. Unified output: research outputs at culture ordering."></a>
+      </figure>
+      <figcaption><strong>The ARMD-Predict framework.</strong> A shared set of EHR features recorded before the culture order feeds two research pipelines. Phenotypic proxies align, where applicable, with the 2024 IDSA guidance on antimicrobial-resistant Gram-negative infections.</figcaption>
+    </div>
+
+    <div class="sub">
+      <h3>Design choices that keep the estimates sensible</h3>
+      <div class="principles">
+        <div class="principle">
+          <h4>Prior resistance cannot lower predicted resistance</h4>
+          <p>Monotonic constraints apply to prior resistance, prior infection and overall prior antibiotic exposure. A patient with an earlier resistant culture is never scored as less likely to be resistant than an otherwise identical patient without one.</p>
+        </div>
+        <div class="principle">
+          <h4>Only what was known before the order</h4>
+          <p>History records dated the same day as the culture were excluded at every site, because whole-day dates cannot show that the event came before the order.</p>
+        </div>
+        <div class="principle">
+          <h4>No patient in two partitions</h4>
+          <p>Each patient's orders fall in exactly one of the training, validation and test partitions (a random patient-grouped 60/20/20 split).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DATA ================= -->
+<section id="data">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Data</p>
+      <h2>Four health systems, <em>each with a public <span class="nw">de-identified</span> release</em></h2>
+      <p>Each system has released a de-identified Antibiotic Resistance Microbiology Dataset (ARMD), available under the access terms of its repository.</p>
+    </div>
+
+    <div class="sites">
+      <article class="card site">
+        <span class="where">Stanford, California</span>
+        <h3>Stanford Health Care</h3>
+        <dl>
+          <dt>Patients</dt><dd>64,677</dd>
+          <dt>Culture orders</dt><dd>112,508</dd>
+          <dt>Culture dates</dt><dd>2007–2024</dd>
+        </dl>
+        <div class="ds"><a href="https://doi.org/10.5061/dryad.jq2bvq8kp">ARMD</a><small>Dryad · doi:10.5061/dryad.jq2bvq8kp</small></div>
+      </article>
+      <article class="card site">
+        <span class="where">Greenville, North Carolina</span>
+        <h3>East Carolina University Health</h3>
+        <dl>
+          <dt>Patients</dt><dd>62,354</dd>
+          <dt>Culture orders</dt><dd>105,725</dd>
+          <dt>Culture dates</dt><dd>2014–2025</dd>
+        </dl>
+        <div class="ds"><a href="https://doi.org/10.5061/dryad.7sqv9s55x">ARMD-ECUH</a><small>Dryad · doi:10.5061/dryad.7sqv9s55x</small></div>
+      </article>
+      <article class="card site">
+        <span class="where">Dallas, Texas</span>
+        <h3>UT Southwestern Medical Center</h3>
+        <dl>
+          <dt>Patients</dt><dd>45,194</dd>
+          <dt>Culture orders</dt><dd>84,434</dd>
+          <dt>Culture dates</dt><dd>2006–2025</dd>
+        </dl>
+        <div class="ds"><a href="https://doi.org/10.5061/dryad.0rxwdbsd5">ARMD-UTSW</a><small>Dryad · doi:10.5061/dryad.0rxwdbsd5</small></div>
+      </article>
+      <article class="card site">
+        <span class="where">Boston, Massachusetts</span>
+        <h3>Mass General Brigham</h3>
+        <dl>
+          <dt>Patients</dt><dd>69,002</dd>
+          <dt>Culture orders</dt><dd>113,285</dd>
+          <dt>Culture dates</dt><dd>shifted</dd>
+        </dl>
+        <div class="ds"><a href="https://doi.org/10.13026/2r5k-b955">ARMD-MGB</a><small>PhysioNet, credentialed access · doi:10.13026/2r5k-b955</small></div>
+      </article>
+    </div>
+
+    <p class="note">Counts are from the paper's cohort table and cover adults with urine, blood or respiratory cultures; patients are not deduplicated across health systems. MGB applied patient-specific date shifts during de-identification, so no calendar window is given. The paper's Stanford, ECUH and UTSW analyses used the public releases, with later versions of some files. <strong>The paper's MGB analysis used a 2026 extraction from the same health system that is not part of the public ARMD-MGB release</strong>; access to that extraction requires approval from Mass General Brigham under a data-use agreement.</p>
+  </div>
+</section>
+
+<!-- ================= RESULTS ================= -->
+<section id="results">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Results</p>
+      <h2>Held-out performance of the <em>23 empiric models</em></h2>
+      <p>Full-feature pooled models, evaluated on held-out patients from a random patient-grouped split.</p>
+    </div>
+
+    <div class="tiles">
+      <div class="tile"><span class="v">0.77</span><span class="l">median AUROC, inpatient urine<small>7 models</small></span></div>
+      <div class="tile"><span class="v">0.70</span><span class="l">median AUROC, inpatient blood<small>7 models</small></span></div>
+      <div class="tile"><span class="v">0.71</span><span class="l">median AUROC, outpatient urine<small>7 models</small></span></div>
+      <div class="tile"><span class="v">0.82</span><span class="l">AUROC, each respiratory model<small>1 inpatient, 1 outpatient</small></span></div>
+    </div>
+
+    <figure class="fig fig-plain">
+      <picture>
+        <source media="(max-width: 640px) and (prefers-color-scheme: dark)" srcset="assets/main_results_tall_dark.png" width="880" height="2520">
+        <source media="(max-width: 640px)" srcset="assets/main_results_tall.png" width="880" height="2520">
+        <source media="(prefers-color-scheme: dark)" srcset="assets/main_results_dark.png" width="2200" height="1400">
+        <img src="assets/main_results.png" width="2200" height="1400" alt="Held-out AUROC with 95% confidence intervals for the 23 pooled empiric-susceptibility models in four panels. Urine inpatient, median 0.773: meropenem 0.831, vancomycin 0.825, cefepime 0.807, ceftriaxone 0.773, piperacillin–tazobactam 0.699, gentamicin 0.679, ampicillin 0.629. Urine outpatient, median 0.708: levofloxacin 0.747, ciprofloxacin 0.743, cefpodoxime 0.733, cefazolin 0.708, TMP-SMX 0.673, nitrofurantoin 0.662, amoxicillin–clavulanate 0.638. Blood inpatient, median 0.703: meropenem 0.835, vancomycin 0.825, cefepime 0.704, ceftriaxone 0.703, piperacillin–tazobactam 0.658, gentamicin 0.656, ampicillin 0.637. Respiratory: ceftriaxone inpatient 0.825, levofloxacin outpatient 0.822.">
+      </picture>
+    </figure>
+    <figcaption><strong>Discrimination by antibiotic.</strong> Dots show AUROC and lines the 95% CI from 1,000 bootstrap replicates that resampled patients. Performance varied more by antibiotic than by site. Ampicillin was the weakest inpatient urine model: its result depends mostly on which organism is present, and the organism is not yet known when empiric therapy is chosen. * Most resistant labels in the blood meropenem cell came from orders with Gram-positive organisms, mainly staphylococci whose meropenem result was derived from oxacillin testing; a model retrained on Gram-negative orders only had AUROC 0.757 (95% CI, 0.691–0.824). † Cefpodoxime labels were inferred from laboratory implied-susceptibility rules.</figcaption>
+
+    <details class="table">
+      <summary>Show the numbers (paper Table 1)</summary>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Antibiotic</th><th class="n">Test orders</th><th class="n">Susceptible</th><th class="n">AUROC (95% CI)</th></tr></thead>
+          <tbody>
+            <tr class="grp"><td colspan="4">Urine, inpatient</td></tr>
+            <tr><td>Ampicillin</td><td class="n">32,451</td><td class="n">44.2%</td><td class="n">0.629 (0.622–0.636)</td></tr>
+            <tr><td>Cefepime</td><td class="n">22,454</td><td class="n">94.6%</td><td class="n">0.807 (0.790–0.823)</td></tr>
+            <tr><td>Ceftriaxone</td><td class="n">27,960</td><td class="n">86.5%</td><td class="n">0.773 (0.764–0.782)</td></tr>
+            <tr><td>Gentamicin</td><td class="n">33,363</td><td class="n">89.4%</td><td class="n">0.679 (0.667–0.692)</td></tr>
+            <tr><td>Meropenem</td><td class="n">19,996</td><td class="n">98.8%</td><td class="n">0.831 (0.802–0.858)</td></tr>
+            <tr><td>Piperacillin–tazobactam</td><td class="n">29,190</td><td class="n">95.7%</td><td class="n">0.699 (0.683–0.715)</td></tr>
+            <tr><td>Vancomycin</td><td class="n">5,111</td><td class="n">93.5%</td><td class="n">0.825 (0.799–0.849)</td></tr>
+            <tr class="med"><td>Median (7 models)</td><td></td><td></td><td class="n">0.773</td></tr>
+            <tr class="grp"><td colspan="4">Urine, outpatient</td></tr>
+            <tr><td>Amoxicillin–clavulanate</td><td class="n">16,919</td><td class="n">82.0%</td><td class="n">0.638 (0.625–0.652)</td></tr>
+            <tr><td>Cefazolin</td><td class="n">24,728</td><td class="n">80.0%</td><td class="n">0.708 (0.698–0.718)</td></tr>
+            <tr><td>Cefpodoxime†</td><td class="n">17,106</td><td class="n">93.0%</td><td class="n">0.733 (0.711–0.752)</td></tr>
+            <tr><td>Ciprofloxacin</td><td class="n">26,668</td><td class="n">79.7%</td><td class="n">0.743 (0.733–0.753)</td></tr>
+            <tr><td>Levofloxacin</td><td class="n">25,578</td><td class="n">81.1%</td><td class="n">0.747 (0.736–0.757)</td></tr>
+            <tr><td>Nitrofurantoin</td><td class="n">29,600</td><td class="n">81.6%</td><td class="n">0.662 (0.653–0.672)</td></tr>
+            <tr><td>TMP-SMX</td><td class="n">27,864</td><td class="n">77.1%</td><td class="n">0.673 (0.663–0.682)</td></tr>
+            <tr class="med"><td>Median (7 models)</td><td></td><td></td><td class="n">0.708</td></tr>
+            <tr class="grp"><td colspan="4">Blood, inpatient</td></tr>
+            <tr><td>Ampicillin</td><td class="n">4,704</td><td class="n">33.4%</td><td class="n">0.637 (0.620–0.653)</td></tr>
+            <tr><td>Cefepime</td><td class="n">3,432</td><td class="n">92.9%</td><td class="n">0.704 (0.672–0.737)</td></tr>
+            <tr><td>Ceftriaxone</td><td class="n">4,976</td><td class="n">80.6%</td><td class="n">0.703 (0.684–0.721)</td></tr>
+            <tr><td>Gentamicin</td><td class="n">6,489</td><td class="n">90.6%</td><td class="n">0.656 (0.629–0.681)</td></tr>
+            <tr><td>Meropenem*</td><td class="n">4,116</td><td class="n">94.3%</td><td class="n">0.835 (0.809–0.862)</td></tr>
+            <tr><td>Piperacillin–tazobactam</td><td class="n">3,543</td><td class="n">94.3%</td><td class="n">0.658 (0.616–0.700)</td></tr>
+            <tr><td>Vancomycin</td><td class="n">4,518</td><td class="n">97.6%</td><td class="n">0.825 (0.785–0.866)</td></tr>
+            <tr class="med"><td>Median (7 models)</td><td></td><td></td><td class="n">0.703</td></tr>
+            <tr class="grp"><td colspan="4">Respiratory, inpatient</td></tr>
+            <tr><td>Ceftriaxone</td><td class="n">1,702</td><td class="n">40.6%</td><td class="n">0.825 (0.797–0.850)</td></tr>
+            <tr class="grp"><td colspan="4">Respiratory, outpatient</td></tr>
+            <tr><td>Levofloxacin</td><td class="n">3,033</td><td class="n">54.5%</td><td class="n">0.822 (0.792–0.847)</td></tr>
+            <tr class="grp"><td>All 23 models</td><td class="n">375,501</td><td></td><td class="n">median 0.708</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <!-- simple rule -->
+    <div class="sub" id="simple-rule">
+      <h3>Compared with repeating the patient's last result</h3>
+      <p class="lede">A simple alternative to a model is to repeat the patient's most recent earlier result for the same antibiotic, falling back to the antibiogram when there is none. For a median of 36.0% of test orders such a result existed (interquartile range, 28.0–41.4%), so the rule had no earlier result for 64% of orders.</p>
+      <div class="cmp-wrap">
+        <div class="card">
+          <div class="cmp-legend">
+            <span><i class="key key-model"></i>ARMD-Predict model</span>
+            <span><i class="key key-rule"></i>Repeat last result</span>
+          </div>
+          <div class="cmp-group">
+            <div class="cmp-title">All test orders <span>· median of 23 models</span></div>
+            <div class="cmp-row"><span>Model</span><div class="cmp-track"><span class="cmp-bar model" style="--v:0.708"></span></div><span class="cmp-val">0.708</span></div>
+            <div class="cmp-row"><span>Last result</span><div class="cmp-track"><span class="cmp-bar rule" style="--v:0.604"></span></div><span class="cmp-val">0.604</span></div>
+          </div>
+          <div class="cmp-group">
+            <div class="cmp-title">Orders with an earlier result <span>· median of 22 models</span></div>
+            <div class="cmp-row"><span>Model</span><div class="cmp-track"><span class="cmp-bar model" style="--v:0.751"></span></div><span class="cmp-val">0.751</span></div>
+            <div class="cmp-row"><span>Last result</span><div class="cmp-track"><span class="cmp-bar rule" style="--v:0.679"></span></div><span class="cmp-val">0.679</span></div>
+          </div>
+          <div class="cmp-axis" aria-hidden="true"><span></span><div class="ticks"><span>0.5</span><span>0.6</span><span>0.7</span><span>0.8</span></div><span></span></div>
+          <div class="cmp-axis" aria-hidden="true"><span></span><span style="text-align:center">AUROC</span><span></span></div>
+        </div>
+        <div class="facts">
+          <div class="fact"><b>Same alert rate, similar yield.</b> When the model raised as many alerts as the rule, the two flagged similar proportions of resistant orders (medians, 23.5% and 23.0%).</div>
+          <div class="fact"><b>Ceftriaxone, inpatient urine.</b> 5.7% of orders had a resistant earlier result. At that alert rate the model flagged 24.1% of resistant orders and the rule 23.6%, and 24.3% of the model's alerts fell on orders with no earlier result.</div>
+          <div class="fact"><b>Where the rule did better.</b> For several outpatient oral agents, including amoxicillin–clavulanate, cefpodoxime and TMP-SMX, the rule had a higher positive predictive value at its own alert rate.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- calibration -->
+    <div class="sub">
+      <h3>Calibration</h3>
+      <p class="lede">Calibration asks whether predicted probabilities agree with how often susceptibility is actually observed. For the ceftriaxone inpatient urine model, raw output was already close to calibrated overall (expected calibration error, 0.004) and at each site (0.004–0.013), and an isotonic transform did not improve it.</p>
+      <figure class="fig fig-narrow">
+        <a href="assets/calibration.png" title="Open the full-size figure"><img src="assets/calibration.png" width="1260" height="906" loading="lazy" alt="Reliability diagrams for the pooled ceftriaxone inpatient urine model, overall and for each of the four sites. Points lie close to the diagonal of perfect calibration. Raw expected calibration error is 0.004 overall, 0.013 at Stanford, 0.004 at ECUH, 0.008 at UTSW and 0.013 at MGB; isotonic recalibration gives 0.006, 0.013, 0.007, 0.007 and 0.015."></a>
+      </figure>
+      <figcaption><strong>Reliability diagrams, ceftriaxone, inpatient urine.</strong> 27,960 held-out test orders; each point is one decile of predicted probability, and axes start at 0.3. Across the 23 pooled models, the choice between a transform and the raw output was made on test-set calibration error, so reported calibration across models is optimistic.</figcaption>
+    </div>
+
+    <!-- operating points -->
+    <div class="sub">
+      <h3>Exploratory operating points</h3>
+      <p class="lede">Two thresholds link a probability to a prescribing question. A high threshold identifies orders for narrowing when at least 95% of them are susceptible; a low threshold flags resistant orders for broader coverage while flagging no more than 20% of susceptible ones. For ceftriaxone in inpatient urine cultures, 54.9% of susceptible orders were identified for narrowing and 60.1% of resistant orders were flagged for broader coverage.</p>
+      <figure class="fig fig-narrow">
+        <a href="assets/operating-points.png" title="Open the full-size figure"><img src="assets/operating-points.png" width="1260" height="1066" loading="lazy" alt="Bar charts of exploratory operating points for urine inpatient, urine outpatient, blood inpatient and respiratory inpatient models. Orange bars give the percentage of susceptible test orders identified for narrowing; green bars give the percentage of resistant test orders flagged for broader coverage. For example, urine inpatient ceftriaxone: 55 and 60; blood inpatient ceftriaxone: 11 and 46."></a>
+      </figure>
+      <figcaption><strong>Narrowing and broader-coverage yields.</strong> Both thresholds were feasible for 17 of 23 models. Thresholds and yields were derived and evaluated on the same test orders, so they are candidate operating points for validation, not tested clinical rules.</figcaption>
+    </div>
+
+    <!-- sites -->
+    <div class="sub">
+      <h3>Across the four hospitals</h3>
+      <p class="lede">Every hospital contributed training data and was evaluated on its own share of the held-out split. For the site-aware development model, median AUROC across 28 inpatient urine antibiotic–site cells was 0.765. For the 23 pooled models in Table 1, across 87 reportable site-specific cells, hospital-specific median AUROC ranged from 0.691 to 0.715.</p>
+      <figure class="fig fig-narrow">
+        <a href="assets/site-heatmap.png" title="Open the full-size figure"><img src="assets/site-heatmap.png" width="1261" height="700" loading="lazy" alt="Heatmap of AUROC for seven inpatient urine antibiotics at four evaluation sites (ECUH, MGB, Stanford, UTSW) for the site-aware pooled model. Values range from 0.610 (ampicillin at UTSW) to 0.873 (meropenem at Stanford); ceftriaxone is between 0.761 and 0.769 at every site."></a>
+      </figure>
+      <figcaption><strong>Site-aware pooled model, inpatient urine.</strong> This development model included a site indicator; the released models omit it. These results describe hospitals represented in training, not transfer to a new hospital.</figcaption>
+    </div>
+
+    <!-- subgroups -->
+    <div class="sub">
+      <h3>Subgroup audit</h3>
+      <p class="lede">For each model, the audit measured the spread between the highest and lowest AUROC across groups. Restricting to subgroups with at least 1,000 cultures reduced the median age-band range from 0.07 to 0.02, so small groups drove the largest differences.</p>
+      <div class="tiles">
+        <div class="tile"><span class="v">0.02</span><span class="l">median AUROC range by sex</span></div>
+        <div class="tile"><span class="v">0.07</span><span class="l">median AUROC range by age band</span></div>
+        <div class="tile"><span class="v">0.05</span><span class="l">median AUROC range by ADI quintile</span></div>
+        <div class="tile"><span class="v">23</span><span class="l">models audited<small>race and ethnicity were unavailable</small></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LOCAL ANTIBIOGRAM ================= -->
+<section id="local">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Use your local antibiogram</p>
+      <h2>Re-anchor to your hospital <em>without retraining</em></h2>
+      <p>A hospital with more resistance than the training sites would see estimates that are systematically too optimistic, even when the model ranks patients well. A prior-probability correction moves every estimate to the local resistance rate.</p>
+    </div>
+    <div class="grid-2">
+      <div>
+        <ol class="steps">
+          <li>Take the local resistance rate for the antibiotic, for example from your hospital's antibiogram.</li>
+          <li>Each patient's odds of resistance are multiplied by the same factor: the local odds of resistance divided by the training odds. Patients keep their order, so discrimination (AUROC) is unchanged by construction.</li>
+          <li>The correction assumes that only the overall resistance rate differs between hospitals, not the relationship between a patient's record and their result.</li>
+        </ol>
+        <div class="formula" role="math" aria-label="logit of p local equals logit of p model minus logit of pi train plus logit of pi local"><span class="term">logit(<span class="t">p<sub>local</sub></span>) =</span> <span class="term">logit(p<sub>model</sub>)</span> <span class="term">− logit(π<sub>train</sub>)</span> <span class="term">+ logit(<span class="p">π<sub>local</sub></span>)</span></div>
+      </div>
+      <div class="facts">
+        <div class="fact"><b>Controlled prevalence sweep.</b> At a 40% local resistance rate, median expected calibration error fell from 0.20 to 0.06 after re-anchoring, without changing discrimination.</div>
+        <div class="fact"><b>Leave-one-site-out.</b> Among site–model cells whose prevalence differed from training by at least 3 percentage points, re-anchoring reduced calibration error in 4 of 5 (mean, 0.061 to 0.037).</div>
+        <div class="fact"><b>Caveat.</b> The retrospective analysis used each held-out site's observed prevalence, which is stronger information than a hospital would usually have in advance. The web app offers this adjustment as an experimental feature.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LIMITATIONS ================= -->
+<section id="limitations">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Intended use and limitations</p>
+      <h2>A research prototype, <em>not a clinical tool</em></h2>
+    </div>
+    <div class="caution" role="note">
+      <h3>Not for clinical decision-making</h3>
+      <p>ARMD-Predict and its web application are research prototypes for independent technical evaluation. The models were developed and evaluated retrospectively, have not been prospectively validated or integrated into an electronic health record, and have not been shown to change prescribing or patient outcomes. Prospective evaluation is required before any clinical use.</p>
+    </div>
+    <ul class="limits">
+      <li>The pooled models used a random patient-grouped split from the same period, so results do not estimate performance in future years. In an earlier analysis with a simpler feature set, chronological splitting reduced AUROC by approximately 0.04.</li>
+      <li>All four health systems are U.S. academic medical centers. Performance in community hospitals and in other countries is unknown.</li>
+      <li>Reported calibration across models is optimistic, because the choice of transform used test-set calibration error. Operating points were derived and evaluated on the same test orders.</li>
+      <li>The phenotype models were evaluated given the observed organism, not as an end-to-end pipeline from predicted organism to phenotype.</li>
+      <li>Intermediate results were grouped with resistant, culture-negative specimens were excluded, and no rule removed probable contaminants such as single-set skin commensals in blood cultures.</li>
+      <li>Race and ethnicity were unavailable, sex labels were inferred at three sites, and the Area Deprivation Index describes a neighborhood rather than an individual.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= CITATION ================= -->
+<section id="citation">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Citation</p>
+      <h2>Cite this work</h2>
+    </div>
+    <div class="cite">
+      <button class="copy" type="button" data-copy="bibtex">Copy BibTeX</button>
+<pre id="bibtex">@article{nateghiharedasht2026armdpredict,
+  title         = {{ARMD-Predict}: multi-site machine learning to predict antibiotic resistance before culture results},
+  author        = {Nateghi Haredasht, Fateme and Marshall, Nicholas P. and Chen, Wenyuan and Cooper, Lauren N. and Wei, Ziming and Konsker, Harrison and Chen, Jacob S. and Klompas, Michael and McKenna, Cara and Medford, Richard J. and Kanjilal, Sanjat and Schoeffler, Austin J. and Ma, Stephen P. and Banaei, Niaz and Asch, Steven M. and Chang, Amy and Deresinski, Stanley C. and Goldstein, Mary K. and Tibshirani, Robert and Chen, Jonathan H.},
+  journal       = {arXiv preprint arXiv:XXXX.XXXXX},
+  year          = {2026},
+  eprint        = {XXXX.XXXXX},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/XXXX.XXXXX}
+}</pre>
+    </div>
+    <p class="cite-note">Fateme Nateghi Haredasht and Nicholas P. Marshall contributed equally. If you use the datasets, please also cite the ARMD releases listed under <a href="#data">Data</a>.</p>
+  </div>
+</section>
+
+<!-- ================= TEAM ================= -->
+<section id="team">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Team</p>
+      <h2>Authors and institutions</h2>
+    </div>
+    <div class="team">
+      <div class="card">
+        <h3>Stanford University</h3>
+        <ul>
+          <li>Fateme Nateghi Haredasht<sup>*,†</sup></li>
+          <li>Nicholas P. Marshall<sup>*</sup></li>
+          <li>Wenyuan Chen</li>
+          <li>Harrison Konsker</li>
+          <li>Jacob S. Chen</li>
+          <li>Austin J. Schoeffler</li>
+          <li>Stephen P. Ma</li>
+          <li>Niaz Banaei</li>
+          <li>Steven M. Asch</li>
+          <li>Amy Chang</li>
+          <li>Stanley C. Deresinski</li>
+          <li>Mary K. Goldstein</li>
+          <li>Robert Tibshirani</li>
+          <li>Jonathan H. Chen</li>
+        </ul>
+      </div>
+      <div class="team-stack">
+        <div class="card single">
+          <h3>Harvard Medical School and Harvard Pilgrim Health Care Institute</h3>
+          <ul><li>Ziming Wei</li><li>Michael Klompas</li><li>Cara McKenna</li><li>Sanjat Kanjilal</li></ul>
+        </div>
+        <div class="card single">
+          <h3>Brigham and Women's Hospital</h3>
+          <ul><li>Michael Klompas</li><li>Cara McKenna</li></ul>
+        </div>
+      </div>
+      <div class="team-stack">
+        <div class="card single">
+          <h3>UT Southwestern Medical Center</h3>
+          <ul><li>Lauren N. Cooper</li><li>Richard J. Medford</li></ul>
+        </div>
+        <div class="card single">
+          <h3>East Carolina University</h3>
+          <ul><li>Richard J. Medford</li></ul>
+        </div>
+      </div>
+    </div>
+    <p class="notes"><sup>*</sup>Contributed equally. <sup>†</sup>Corresponding author: <a href="mailto:fnateghi@stanford.edu">fnateghi@stanford.edu</a>.</p>
+    <details class="affil">
+      <summary>Full affiliations</summary>
+      <ol>
+        <li>Division of Computational Medicine, Stanford University, Stanford, CA, USA</li>
+        <li>Division of Pediatric Infectious Diseases, Department of Pediatrics, Stanford University School of Medicine, Palo Alto, CA, USA</li>
+        <li>Clinical Informatics Center, University of Texas Southwestern Medical Center, Dallas, TX, USA</li>
+        <li>Department of Population Medicine, Harvard Medical School and Harvard Pilgrim Health Care Institute, Boston, MA, USA</li>
+        <li>Division of Infectious Diseases, Department of Medicine, Brigham and Women's Hospital, Boston, MA, USA</li>
+        <li>Brody School of Medicine, Department of Internal Medicine, East Carolina University, Greenville, NC, USA</li>
+        <li>Department of Emergency Medicine, Department of Medicine, Stanford University School of Medicine, Stanford, CA, USA</li>
+        <li>Division of Hospital Medicine, Department of Medicine, Stanford University School of Medicine, Stanford, CA, USA</li>
+        <li>Division of Infectious Diseases and Geographic Medicine, Department of Medicine, Stanford University School of Medicine, Stanford, CA, USA</li>
+        <li>Department of Pathology, Stanford University School of Medicine, Stanford, CA, USA</li>
+        <li>Division of Primary Care and Population Health, Department of Medicine, Stanford University School of Medicine, Stanford, CA, USA</li>
+        <li>Department of Health Policy, Stanford University School of Medicine, Stanford, CA, USA</li>
+        <li>Department of Biomedical Data Science and Department of Statistics, Stanford University, Stanford, CA, USA</li>
+        <li>Clinical Excellence Research Center, Stanford University School of Medicine, Stanford, CA, USA</li>
+      </ol>
+      <p style="margin-top:10px">Author numbering in the paper: Nateghi Haredasht 1; Marshall 2; W. Chen 1; Cooper 3; Wei 4; Konsker 1; J. S. Chen 1; Klompas 4, 5; McKenna 4, 5; Medford 3, 6; Kanjilal 4; Schoeffler 7; Ma 8; Banaei 9, 10; Asch 11; Chang 9; Deresinski 9; Goldstein 12; Tibshirani 13; J. H. Chen 1, 8, 14.</p>
+    </details>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt="" width="40" height="25"><span>ARMD-Predict</span></a>
+    <nav aria-label="Footer">
+      <a href="https://arxiv.org/abs/XXXX.XXXXX">Paper</a>
+      <a href="https://github.com/HealthRex/ARMD-Predict">Code</a>
+      <a href="https://armd-predict.stanford.edu">Web app</a>
+      <a href="#data">Data</a>
+      <a href="#citation">Cite</a>
+    </nav>
+    <p style="margin:0;flex-basis:100%">Research prototype. Not for clinical decision-making. Figures and numbers on this page are from the ARMD-Predict paper (2026).</p>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll('[data-copy]').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var el = document.getElementById(btn.getAttribute('data-copy'));
+    var text = el.textContent;
+    function done() { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy BibTeX'; }, 1800); }
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      try { document.execCommand('copy'); done(); } catch (e) {}
+    }
+    if (navigator.clipboard && window.isSecureContext) { navigator.clipboard.writeText(text).then(done, fallback); }
+    else { fallback(); }
+  });
+});
+</script>
+</body>
+</html>
