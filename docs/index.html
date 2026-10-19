@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ARMD-Predict</title>
-<meta name="description" content="ARMD-Predict estimates, at culture ordering, the probability that an organism recovered from the culture will be susceptible to each candidate antibiotic: a patient-specific antibiogram trained on four U.S. health systems. Research prototype, not for clinical decision-making.">
+<meta name="description" content="ARMD-Predict estimates, at culture ordering, the probability that all tested organisms recovered from the culture will be susceptible to each candidate antibiotic: a patient-specific antibiogram trained on four U.S. health systems. Research prototype, not for clinical decision-making.">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://healthrex.github.io/ARMD-Predict/">
@@ -414,8 +414,6 @@ footer nav a:hover { color: var(--teal-strong); }
       <li><a href="#citation">Cite</a></li>
     </ul>
     <div class="nav-cta">
-      <!-- TODO: replace XXXX.XXXXX with the arXiv identifier once the preprint is posted -->
-      <a class="btn hide-sm" href="https://arxiv.org/abs/XXXX.XXXXX">Paper</a>
       <a class="btn" href="https://github.com/HealthRex/ARMD-Predict">GitHub</a>
     </div>
   </div>
@@ -424,8 +422,8 @@ footer nav a:hover { color: var(--teal-strong); }
 <header class="hero" id="top">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <p class="eyebrow">Preprint 2026 · Research prototype</p>
-      <h1><span class="name">ARMD-Predict</span>: <span class="nw">multi-site</span> machine learning to <em>predict antibiotic resistance before culture results</em></h1>
+      <p class="eyebrow">Research prototype · 2026</p>
+      <h1><span class="name">ARMD-Predict</span>: <span class="nw">Multi-Site</span> Machine Learning to <em>Predict Antibiotic Resistance before Culture Results</em></h1>
 
       <p class="authors">
         Fateme Nateghi Haredasht<sup>1,*,†</sup>, Nicholas P. Marshall<sup>1,*</sup>, Wenyuan Chen<sup>1</sup>, Lauren N. Cooper<sup>2</sup>, Ziming Wei<sup>3</sup>, Harrison Konsker<sup>1</sup>, Jacob S. Chen<sup>1</sup>, Michael Klompas<sup>3,4</sup>, Cara McKenna<sup>3,4</sup>, Richard J. Medford<sup>2,5</sup>, Sanjat Kanjilal<sup>3</sup>, Austin J. Schoeffler<sup>1</sup>, Stephen P. Ma<sup>1</sup>, Niaz Banaei<sup>1</sup>, Steven M. Asch<sup>1</sup>, Amy Chang<sup>1</sup>, Stanley C. Deresinski<sup>1</sup>, Mary K. Goldstein<sup>1</sup>, Robert Tibshirani<sup>1</sup>, Jonathan H. Chen<sup>1</sup>
@@ -436,11 +434,7 @@ footer nav a:hover { color: var(--teal-strong); }
       <p class="notes"><sup>*</sup>Contributed equally. <sup>†</sup>Corresponding author.</p>
 
       <div class="hero-actions">
-        <a class="btn btn-primary" href="https://arxiv.org/abs/XXXX.XXXXX">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>
-          Paper <span class="tag">arXiv</span>
-        </a>
-        <a class="btn" href="https://github.com/HealthRex/ARMD-Predict">
+        <a class="btn btn-primary" href="https://github.com/HealthRex/ARMD-Predict">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>
           Code
         </a>
@@ -540,8 +534,8 @@ footer nav a:hover { color: var(--teal-strong); }
       <h2>A patient-specific antibiogram, <em>at the moment a culture is ordered</em></h2>
     </div>
     <div class="prose">
-      <p>Clinicians often choose empiric antibiotics 24 to 72 hours before culture and susceptibility results are available. During that interval they rely on the hospital antibiogram: the share of recovered isolates that were susceptible to each antibiotic, reported once for all patients.</p>
-      <p><strong>ARMD-Predict estimates the same quantity for one patient.</strong> From information recorded before the order, it estimates the probability that an organism recovered from the culture will be susceptible to each candidate antibiotic. The models were trained on 7.4 million culture–antibiotic results from 415,952 culture orders in 241,227 patients at Stanford Health Care, East Carolina University Health (ECUH), UT Southwestern Medical Center (UTSW) and Mass General Brigham (MGB). A secondary hierarchical model predicts the organism and resistance phenotypes aligned with the 2024 IDSA guidance.</p>
+      <p>Organism identification and susceptibility testing can take several days, so clinicians often choose empiric antibiotics before results are available. During that interval they rely on the hospital antibiogram: the share of recovered isolates that were susceptible to each antibiotic, reported once for all patients.</p>
+      <p><strong>ARMD-Predict estimates the same quantity for one patient.</strong> From information recorded up to the culture order, it estimates the probability that all tested organisms recovered from the culture will be susceptible to each candidate antibiotic. The models were trained on 7.4 million culture–antibiotic results from 415,952 culture orders in 241,227 patients at Stanford Health Care, East Carolina University Health (ECUH), UT Southwestern Medical Center (UTSW) and Mass General Brigham (MGB). Separately trained and evaluated models predict the likely organism and organism-specific resistance phenotypes, including proxies for categories in the 2024 IDSA guidance.</p>
     </div>
 
     <div class="compare">
@@ -571,7 +565,7 @@ footer nav a:hover { color: var(--teal-strong); }
     <div class="section-head">
       <p class="eyebrow">How it works</p>
       <h2>Two components built on one set of <em><span class="nw">pre-order</span> features</em></h2>
-      <p>Both components use only information recorded before the culture order: demographics, care setting, prior resistance and infection, prior antibiotic exposure, prior procedures, comorbidities, laboratory values and the Area Deprivation Index.</p>
+      <p>Both components use information recorded up to the culture order: demographics, care setting, prior resistance and infection, prior antibiotic exposure, prior procedures, comorbidities, laboratory values and the Area Deprivation Index.</p>
     </div>
 
     <div class="grid-2">
@@ -581,27 +575,27 @@ footer nav a:hover { color: var(--teal-strong); }
         <p>One XGBoost model per antibiotic, specimen and care setting returns the probability that the organisms recovered from the order are susceptible to that antibiotic.</p>
         <ul>
           <li>23 pooled four-site models: 7 inpatient urine, 7 outpatient urine, 7 inpatient blood and 2 respiratory.</li>
-          <li>Released models omit site identity; a site-agnostic pooled model performed nearly identically to a site-aware one.</li>
-          <li>The public web app uses a short form restricted to six feature blocks a clinician can report at ordering.</li>
+          <li>Released models omit site identity. At MGB, the only hospital in this comparison, a site-agnostic pooled model performed nearly identically to a site-aware one.</li>
+          <li>The public web app uses a short form restricted to five feature blocks a clinician can report at ordering: demographics, care setting, prior resistance, prior infection and prior antibiotic exposure.</li>
         </ul>
       </article>
       <article class="card comp comp-p">
         <span class="num">COMPONENT 2</span>
         <h3>Organism and resistance phenotype</h3>
-        <p>A three-stage hierarchy decomposes the pre-culture question into Gram class, organism identity and organism-specific resistance.</p>
+        <p>Three stages address Gram class, organism identity and organism-specific resistance. Each stage was trained and evaluated separately, not as an end-to-end cascade.</p>
         <ul>
           <li>Gram stain: pooled held-out AUROC 0.72.</li>
           <li>Organism identification: the 20 most frequent organisms per specimen and setting, plus Other.</li>
-          <li>30 phenotype models aligned with the 2024 IDSA guidance (ESBL, AmpC, CRE and difficult-to-treat <i>P. aeruginosa</i> proxies), with MRSA and VRE as Gram-positive complements. AUROC ranged from 0.519 to 0.834, evaluated given the observed organism.</li>
+          <li>30 phenotype models aligned with the 2024 IDSA guidance: proxies for ESBL production and CRE, measured resistance in organisms at moderate risk of AmpC production, and non-susceptibility of <i>P. aeruginosa</i> to individual agents, with MRSA and VRE as Gram-positive complements. AUROC ranged from 0.519 to 0.834, evaluated given the laboratory-reported organism. Phenotype models are not shown in the public web app.</li>
         </ul>
       </article>
     </div>
 
     <div class="sub">
       <figure class="fig fig-narrow">
-        <a href="assets/framework.png" title="Open the full-size figure"><img src="assets/framework.png" width="1397" height="1149" loading="lazy" alt="ARMD-Predict framework diagram. Inputs: patient features recorded before the culture order (demographics, prior resistance and infection, prior antibiotic exposure, laboratory values, Area Deprivation Index and care setting) from four sites: Stanford, ECUH, UTSW and MGB. Two parallel pipelines. Part 1, empiric susceptibility per antibiotic: a pooled four-site XGBoost with no site indicator, with urine, blood and respiratory models, giving a calibrated probability of susceptibility per antibiotic. Part 2, organism and resistance phenotype, IDSA-aligned: stage 1 Gram stain, stage 2 organism identification (top 20 plus Other), stage 3 thirty IDSA-aligned phenotype models (ESBL, AmpC, CRE, DTR-Pa, MRSA, VRE), giving organism-specific resistance phenotypes. Unified output: research outputs at culture ordering."></a>
+        <a href="assets/framework.png" title="Open the full-size figure"><img src="assets/framework.png" width="1397" height="1149" loading="lazy" alt="ARMD-Predict framework diagram. Inputs: patient features recorded up to the culture order (demographics, prior resistance and infection, prior antibiotic exposure, laboratory values, Area Deprivation Index and care setting) from four sites: Stanford, ECUH, UTSW and MGB. Two parallel pipelines. Part 1, empiric susceptibility per antibiotic: a pooled four-site XGBoost with no site indicator, with urine, blood and respiratory models, giving a calibrated probability of susceptibility per antibiotic. Part 2, organism and resistance phenotype, IDSA-aligned: stage 1 Gram stain, stage 2 organism identification (top 20 plus Other), stage 3 thirty IDSA-aligned phenotype models (ESBL, AmpC-risk, CRE, P. aeruginosa, MRSA, VRE); each stage was trained and evaluated separately, and phenotype models were evaluated given the laboratory-reported organism. Unified output: research outputs at culture ordering, the probability of susceptibility to each candidate antibiotic with exploratory high and low thresholds, and ranked organism labels with organism-specific phenotype probabilities."></a>
       </figure>
-      <figcaption><strong>The ARMD-Predict framework.</strong> A shared set of EHR features recorded before the culture order feeds two research pipelines. Phenotypic proxies align, where applicable, with the 2024 IDSA guidance on antimicrobial-resistant Gram-negative infections.</figcaption>
+      <figcaption><strong>The ARMD-Predict framework.</strong> A shared set of EHR features recorded up to the culture order feeds two research pipelines, each trained and evaluated separately. Phenotypic proxies align, where applicable, with the 2024 IDSA guidance on antimicrobial-resistant Gram-negative infections.</figcaption>
     </div>
 
     <div class="sub">
@@ -612,8 +606,8 @@ footer nav a:hover { color: var(--teal-strong); }
           <p>Monotonic constraints apply to prior resistance, prior infection and overall prior antibiotic exposure. A patient with an earlier resistant culture is never scored as less likely to be resistant than an otherwise identical patient without one.</p>
         </div>
         <div class="principle">
-          <h4>Only what was known before the order</h4>
-          <p>History records dated the same day as the culture were excluded at every site, because whole-day dates cannot show that the event came before the order.</p>
+          <h4>No same-day history</h4>
+          <p>History records dated the same day as the culture were excluded at every site, because whole-day dates cannot show that the event came before the order. Two exceptions: nursing-home contact, whose records mostly carry the culture day, and laboratory summaries, which cover the 14 days up to and including the day of the order.</p>
         </div>
         <div class="principle">
           <h4>No patient in two partitions</h4>
@@ -791,11 +785,11 @@ footer nav a:hover { color: var(--teal-strong); }
     <!-- operating points -->
     <div class="sub">
       <h3>Exploratory operating points</h3>
-      <p class="lede">Two thresholds link a probability to a prescribing question. A high threshold identifies orders for narrowing when at least 95% of them are susceptible; a low threshold flags resistant orders for broader coverage while flagging no more than 20% of susceptible ones. For ceftriaxone in inpatient urine cultures, 54.9% of susceptible orders were identified for narrowing and 60.1% of resistant orders were flagged for broader coverage.</p>
+      <p class="lede">Two exploratory thresholds link a probability to a prescribing question. A high threshold identifies susceptible cultures, requiring that at least 95% of the cultures above it are susceptible (positive predictive value of at least 95%); a low threshold flags resistant cultures while flagging no more than 20% of susceptible ones. For ceftriaxone in inpatient urine cultures, 54.9% of susceptible orders were identified at the high threshold and 60.1% of resistant orders were flagged at the low threshold.</p>
       <figure class="fig fig-narrow">
-        <a href="assets/operating-points.png" title="Open the full-size figure"><img src="assets/operating-points.png" width="1260" height="1066" loading="lazy" alt="Bar charts of exploratory operating points for urine inpatient, urine outpatient, blood inpatient and respiratory inpatient models. Orange bars give the percentage of susceptible test orders identified for narrowing; green bars give the percentage of resistant test orders flagged for broader coverage. For example, urine inpatient ceftriaxone: 55 and 60; blood inpatient ceftriaxone: 11 and 46."></a>
+        <a href="assets/operating-points.png" title="Open the full-size figure"><img src="assets/operating-points.png" width="1260" height="1022" loading="lazy" alt="Bar charts of exploratory operating points for urine inpatient, urine outpatient, blood inpatient and respiratory inpatient models. Orange bars give the percentage of susceptible test cultures identified at the high threshold (positive predictive value of at least 95%); green bars give the percentage of resistant test cultures flagged at the low threshold (no more than 20% of susceptible cultures flagged). For example, urine inpatient ceftriaxone: 55 and 60; blood inpatient ceftriaxone: 11 and 46."></a>
       </figure>
-      <figcaption><strong>Narrowing and broader-coverage yields.</strong> Both thresholds were feasible for 17 of 23 models. Thresholds and yields were derived and evaluated on the same test orders, so they are candidate operating points for validation, not tested clinical rules.</figcaption>
+      <figcaption><strong>Exploratory operating points for identifying susceptible and flagging resistant cultures.</strong> Both thresholds were feasible for 17 of 23 models. The two thresholds were selected independently and do not form a single policy; in 9 of the 17 models the low threshold lay above the high threshold. Thresholds and yields were derived and evaluated on the same test orders, so they are candidate operating points for validation, not tested clinical rules.</figcaption>
     </div>
 
     <!-- sites -->
@@ -842,7 +836,7 @@ footer nav a:hover { color: var(--teal-strong); }
       <div class="facts">
         <div class="fact"><b>Controlled prevalence sweep.</b> At a 40% local resistance rate, median expected calibration error fell from 0.20 to 0.06 after re-anchoring, without changing discrimination.</div>
         <div class="fact"><b>Leave-one-site-out.</b> Among site–model cells whose prevalence differed from training by at least 3 percentage points, re-anchoring reduced calibration error in 4 of 5 (mean, 0.061 to 0.037).</div>
-        <div class="fact"><b>Caveat.</b> The retrospective analysis used each held-out site's observed prevalence, which is stronger information than a hospital would usually have in advance. The web app offers this adjustment as an experimental feature.</div>
+        <div class="fact"><b>Caveat.</b> The retrospective analysis used each held-out site's observed prevalence, which is stronger information than a hospital would usually have in advance. The web app's experimental local adjustment is a different, simpler method: it shifts each estimate by the difference between the local and training <i>E. coli</i> resistance rates, weighted by the share of that culture group's organisms that are <i>E. coli</i>. It has not itself been evaluated.</div>
       </div>
     </div>
   </div>
@@ -857,14 +851,12 @@ footer nav a:hover { color: var(--teal-strong); }
     </div>
     <div class="cite">
       <button class="copy" type="button" data-copy="bibtex">Copy BibTeX</button>
-<pre id="bibtex">@article{nateghiharedasht2026armdpredict,
-  title         = {{ARMD-Predict}: multi-site machine learning to predict antibiotic resistance before culture results},
-  author        = {Nateghi Haredasht, Fateme and Marshall, Nicholas P. and Chen, Wenyuan and Cooper, Lauren N. and Wei, Ziming and Konsker, Harrison and Chen, Jacob S. and Klompas, Michael and McKenna, Cara and Medford, Richard J. and Kanjilal, Sanjat and Schoeffler, Austin J. and Ma, Stephen P. and Banaei, Niaz and Asch, Steven M. and Chang, Amy and Deresinski, Stanley C. and Goldstein, Mary K. and Tibshirani, Robert and Chen, Jonathan H.},
-  journal       = {arXiv preprint arXiv:XXXX.XXXXX},
-  year          = {2026},
-  eprint        = {XXXX.XXXXX},
-  archivePrefix = {arXiv},
-  url           = {https://arxiv.org/abs/XXXX.XXXXX}
+<pre id="bibtex">@unpublished{nateghiharedasht2026armdpredict,
+  title  = {{ARMD-Predict}: Multi-Site Machine Learning to Predict Antibiotic Resistance before Culture Results},
+  author = {Nateghi Haredasht, Fateme and Marshall, Nicholas P. and Chen, Wenyuan and Cooper, Lauren N. and Wei, Ziming and Konsker, Harrison and Chen, Jacob S. and Klompas, Michael and McKenna, Cara and Medford, Richard J. and Kanjilal, Sanjat and Schoeffler, Austin J. and Ma, Stephen P. and Banaei, Niaz and Asch, Steven M. and Chang, Amy and Deresinski, Stanley C. and Goldstein, Mary K. and Tibshirani, Robert and Chen, Jonathan H.},
+  year   = {2026},
+  note   = {Manuscript submitted for publication},
+  url    = {https://healthrex.github.io/ARMD-Predict/}
 }</pre>
     </div>
     <p class="cite-note">Fateme Nateghi Haredasht and Nicholas P. Marshall contributed equally. If you use the datasets, please also cite the ARMD releases listed under <a href="#data">Data</a>.</p>
@@ -924,7 +916,8 @@ footer nav a:hover { color: var(--teal-strong); }
       <summary>Full affiliations</summary>
       <ol>
         <li>Division of Computational Medicine, Stanford University, Stanford, CA, USA</li>
-        <li>Division of Pediatric Infectious Diseases, Department of Pediatrics, Stanford University School of Medicine, Palo Alto, CA, USA</li>
+        <li>Division of Infectious Diseases, Department of Pediatrics, Stanford University School of Medicine, Palo Alto, CA, USA</li>
+        <li>Division of Clinical Informatics, Department of Pediatrics, Stanford University School of Medicine, Palo Alto, CA, USA</li>
         <li>Clinical Informatics Center, University of Texas Southwestern Medical Center, Dallas, TX, USA</li>
         <li>Department of Population Medicine, Harvard Medical School and Harvard Pilgrim Health Care Institute, Boston, MA, USA</li>
         <li>Division of Infectious Diseases, Department of Medicine, Brigham and Women's Hospital, Boston, MA, USA</li>
@@ -938,7 +931,7 @@ footer nav a:hover { color: var(--teal-strong); }
         <li>Department of Biomedical Data Science and Department of Statistics, Stanford University, Stanford, CA, USA</li>
         <li>Clinical Excellence Research Center, Stanford University School of Medicine, Stanford, CA, USA</li>
       </ol>
-      <p style="margin-top:10px">Author numbering in the paper: Nateghi Haredasht 1; Marshall 2; W. Chen 1; Cooper 3; Wei 4; Konsker 1; J. S. Chen 1; Klompas 4, 5; McKenna 4, 5; Medford 3, 6; Kanjilal 4; Schoeffler 7; Ma 8; Banaei 9, 10; Asch 11; Chang 9; Deresinski 9; Goldstein 12; Tibshirani 13; J. H. Chen 1, 8, 14.</p>
+      <p style="margin-top:10px">Author numbering in the paper: Nateghi Haredasht 1; Marshall 2, 3; W. Chen 1; Cooper 4; Wei 5; Konsker 1; J. S. Chen 1; Klompas 5, 6; McKenna 5, 6; Medford 4, 7; Kanjilal 5; Schoeffler 8; Ma 9; Banaei 10, 11; Asch 12; Chang 10; Deresinski 10; Goldstein 13; Tibshirani 14; J. H. Chen 1, 9, 15.</p>
     </details>
   </div>
 </section>
@@ -948,13 +941,12 @@ footer nav a:hover { color: var(--teal-strong); }
   <div class="wrap">
     <a class="brand" href="#top"><img src="assets/logo.svg" alt="" width="40" height="25"><span>ARMD-Predict</span></a>
     <nav aria-label="Footer">
-      <a href="https://arxiv.org/abs/XXXX.XXXXX">Paper</a>
       <a href="https://github.com/HealthRex/ARMD-Predict">Code</a>
       <a href="https://armd-predict.stanford.edu">Web app</a>
       <a href="#data">Data</a>
       <a href="#citation">Cite</a>
     </nav>
-    <p style="margin:0;flex-basis:100%">Research prototype. Not for clinical decision-making. Figures and numbers on this page are from the ARMD-Predict paper (2026).</p>
+    <p style="margin:0;flex-basis:100%">Research prototype. Not for clinical decision-making. Figures and numbers on this page are from the ARMD-Predict manuscript (2026).</p>
   </div>
 </footer>
 

@@ -2,12 +2,10 @@
   <img src="assets/armd-predict-logo.svg" alt="ARMD-Predict logo: a teal culture plate with three antibiotic discs, circled by a purple orbit" width="200">
 </p>
 
-<h1 align="center">ARMD-Predict: multi-site machine learning to predict antibiotic resistance before culture results</h1>
+<h1 align="center">ARMD-Predict: Multi-Site Machine Learning to Predict Antibiotic Resistance before Culture Results</h1>
 
 <p align="center">
   <a href="https://healthrex.github.io/ARMD-Predict/"><img src="https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=googlechrome&logoColor=white&color=082A5E" alt="Website"></a>
-  <!-- TODO: replace XXXX.XXXXX with the arXiv identifier once the preprint is posted -->
-  <a href="https://arxiv.org/abs/XXXX.XXXXX"><img src="https://img.shields.io/badge/Paper-000000?style=for-the-badge&logo=arxiv&logoColor=white&color=B31B1B" alt="Paper (arXiv)"></a>
   <a href="https://armd-predict.stanford.edu"><img src="https://img.shields.io/badge/Web%20app-000000?style=for-the-badge&logo=googlechrome&logoColor=white&color=0E7F81" alt="Web app"></a>
   <a href="#data"><img src="https://img.shields.io/badge/Data-000000?style=for-the-badge&logo=openaccess&logoColor=white&color=7457E8" alt="Data"></a>
   <!-- TODO: confirm the license before release -->
@@ -18,13 +16,13 @@
 
 ## Overview
 
-Clinicians choose empiric antibiotics before culture results are available, guided by hospital antibiograms that give every patient the same estimate. ARMD-Predict estimates, at the time a culture is ordered and from information recorded before the order, the probability that an organism recovered from that culture will be susceptible to each candidate antibiotic: a patient-specific antibiogram. The models were trained on 7.4 million culture–antibiotic results from 415,952 culture orders in 241,227 patients at four U.S. health systems: Stanford Health Care, East Carolina University Health (ECUH), UT Southwestern Medical Center (UTSW) and Mass General Brigham (MGB). Monotonic constraints prevent prior resistance from lowering predicted resistance, and a prior-probability correction re-anchors predictions to a hospital's own antibiogram without retraining. A secondary hierarchical model predicts the organism and resistance phenotypes aligned with the 2024 IDSA guidance.
+Clinicians choose empiric antibiotics before culture results are available, guided by hospital antibiograms that give every patient the same estimate. ARMD-Predict estimates, at the time a culture is ordered and from information recorded up to the order, the probability that all tested organisms recovered from that culture will be susceptible to each candidate antibiotic: a patient-specific antibiogram. The models were trained on 7.4 million culture–antibiotic results from 415,952 culture orders in 241,227 patients at four U.S. health systems: Stanford Health Care, East Carolina University Health (ECUH), UT Southwestern Medical Center (UTSW) and Mass General Brigham (MGB). Monotonic constraints prevent prior resistance from lowering predicted resistance, and a prior-probability correction re-anchors predictions to a hospital's own antibiogram without retraining. Separately trained and evaluated models predict the likely organism and organism-specific resistance phenotypes, including proxies for categories in the 2024 IDSA guidance.
 
 <p align="center">
-  <a href="assets/framework.png"><img src="assets/framework.png" alt="ARMD-Predict framework. Patient features recorded before the culture order (demographics, prior resistance and infection, prior antibiotic exposure, laboratory values, Area Deprivation Index and care setting) from four sites feed two parallel pipelines. Part 1, empiric susceptibility: pooled four-site XGBoost models with no site indicator, for urine, blood and respiratory cultures, giving a calibrated probability of susceptibility per antibiotic. Part 2, organism and resistance phenotype: Gram stain, then organism identification (top 20 plus Other), then 30 IDSA-aligned phenotype models. Both produce research outputs at culture ordering." width="760"></a>
+  <a href="assets/framework.png"><img src="assets/framework.png" alt="ARMD-Predict framework diagram. Inputs: patient features recorded up to the culture order (demographics, prior resistance and infection, prior antibiotic exposure, laboratory values, Area Deprivation Index and care setting) from four sites: Stanford, ECUH, UTSW and MGB. Two parallel pipelines. Part 1, empiric susceptibility per antibiotic: a pooled four-site XGBoost with no site indicator, with urine, blood and respiratory models, giving a calibrated probability of susceptibility per antibiotic. Part 2, organism and resistance phenotype, IDSA-aligned: stage 1 Gram stain, stage 2 organism identification (top 20 plus Other), stage 3 thirty IDSA-aligned phenotype models (ESBL, AmpC-risk, CRE, P. aeruginosa, MRSA, VRE); each stage was trained and evaluated separately, and phenotype models were evaluated given the laboratory-reported organism. Unified output: research outputs at culture ordering, the probability of susceptibility to each candidate antibiotic with exploratory high and low thresholds, and ranked organism labels with organism-specific phenotype probabilities." width="760"></a>
 </p>
 
-*The ARMD-Predict framework. A shared set of features recorded before the culture order feeds two research pipelines: empiric susceptibility per antibiotic (Part 1) and organism and resistance-phenotype prediction (Part 2).*
+*The ARMD-Predict framework. A shared set of features recorded up to the culture order feeds two research pipelines: empiric susceptibility per antibiotic (Part 1) and organism and resistance-phenotype prediction (Part 2). Each stage was trained and evaluated separately.*
 
 ## Main Results
 
@@ -77,8 +75,8 @@ ARMD-Predict is a **research prototype**. It is intended for research and for in
 - The models were developed and evaluated retrospectively. They have not been prospectively validated, integrated into an electronic health record or shown to change prescribing or patient outcomes.
 - The pooled models used a random patient-grouped split from the same period, so the results do not estimate performance in future years. In an earlier analysis with a simpler feature set, chronological splitting reduced AUROC by approximately 0.04.
 - All four health systems are U.S. academic medical centers. Performance in community hospitals and in other countries is unknown.
-- Reported calibration across the pooled models is optimistic: the choice between a calibration transform and the raw output was made on test-set calibration error, which was then reported. The narrowing and broader-coverage operating points were derived and evaluated on the same test orders.
-- The organism-specific phenotype models were evaluated given the observed organism, not as an end-to-end pipeline from predicted organism to phenotype.
+- Reported calibration across the pooled models is optimistic: the choice between a calibration transform and the raw output was made on test-set calibration error, which was then reported. The exploratory high and low operating points were derived and evaluated on the same test orders.
+- The organism-specific phenotype models were evaluated given the laboratory-reported organism, not as an end-to-end pipeline from predicted organism to phenotype.
 - Intermediate results were grouped with resistant. Race and ethnicity were unavailable, and sex labels were inferred at three sites.
 - The local-prevalence adjustment assumes that only the overall resistance rate differs between hospitals; its retrospective evaluation used each held-out site's observed prevalence.
 
@@ -87,14 +85,12 @@ ARMD-Predict is a **research prototype**. It is intended for research and for in
 If you use ARMD-Predict, please cite:
 
 ```bibtex
-@article{nateghiharedasht2026armdpredict,
-  title         = {{ARMD-Predict}: multi-site machine learning to predict antibiotic resistance before culture results},
-  author        = {Nateghi Haredasht, Fateme and Marshall, Nicholas P. and Chen, Wenyuan and Cooper, Lauren N. and Wei, Ziming and Konsker, Harrison and Chen, Jacob S. and Klompas, Michael and McKenna, Cara and Medford, Richard J. and Kanjilal, Sanjat and Schoeffler, Austin J. and Ma, Stephen P. and Banaei, Niaz and Asch, Steven M. and Chang, Amy and Deresinski, Stanley C. and Goldstein, Mary K. and Tibshirani, Robert and Chen, Jonathan H.},
-  journal       = {arXiv preprint arXiv:XXXX.XXXXX},
-  year          = {2026},
-  eprint        = {XXXX.XXXXX},
-  archivePrefix = {arXiv},
-  url           = {https://arxiv.org/abs/XXXX.XXXXX}
+@unpublished{nateghiharedasht2026armdpredict,
+  title  = {{ARMD-Predict}: Multi-Site Machine Learning to Predict Antibiotic Resistance before Culture Results},
+  author = {Nateghi Haredasht, Fateme and Marshall, Nicholas P. and Chen, Wenyuan and Cooper, Lauren N. and Wei, Ziming and Konsker, Harrison and Chen, Jacob S. and Klompas, Michael and McKenna, Cara and Medford, Richard J. and Kanjilal, Sanjat and Schoeffler, Austin J. and Ma, Stephen P. and Banaei, Niaz and Asch, Steven M. and Chang, Amy and Deresinski, Stanley C. and Goldstein, Mary K. and Tibshirani, Robert and Chen, Jonathan H.},
+  year   = {2026},
+  note   = {Manuscript submitted for publication},
+  url    = {https://healthrex.github.io/ARMD-Predict/}
 }
 ```
 

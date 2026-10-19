@@ -4,8 +4,8 @@ title: "ARMD-Predict"
 type: software
 abstract: >-
   ARMD-Predict estimates, at culture ordering and from information recorded
-  before the order, the probability that an organism recovered from the culture
-  will be susceptible to each candidate antibiotic: a patient-specific
+  up to the order, the probability that all tested organisms recovered from the
+  culture will be susceptible to each candidate antibiotic: a patient-specific
   antibiogram. The models were trained on 7.4 million culture-antibiotic
   results from 415,952 culture orders in 241,227 patients at four U.S. health
   systems. Research prototype; not for clinical decision-making.
@@ -83,8 +83,8 @@ keywords:
   - machine learning
   - electronic health records
 preferred-citation:
-  type: article
-  title: "ARMD-Predict: multi-site machine learning to predict antibiotic resistance before culture results"
+  type: unpublished
+  title: "ARMD-Predict: Multi-Site Machine Learning to Predict Antibiotic Resistance before Culture Results"
   authors:
     - family-names: "Nateghi Haredasht"
       given-names: "Fateme"
@@ -148,7 +148,5 @@ preferred-citation:
       given-names: "Jonathan H."
       affiliation: "Stanford University"
   year: 2026
-  journal: "arXiv preprint"
-  # TODO: replace XXXX.XXXXX with the arXiv identifier once the preprint is posted
-  url: "https://arxiv.org/abs/XXXX.XXXXX"
-  notes: "Fateme Nateghi Haredasht and Nicholas P. Marshall contributed equally."
+  url: "https://healthrex.github.io/ARMD-Predict/"
+  notes: "Manuscript submitted for publication. Fateme Nateghi Haredasht and Nicholas P. Marshall contributed equally."
