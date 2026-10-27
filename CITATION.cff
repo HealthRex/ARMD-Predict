@@ -80,11 +80,12 @@ keywords:
   - antibiotic susceptibility
   - antibiogram
   - empiric therapy
+  - artificial intelligence
   - machine learning
   - electronic health records
 preferred-citation:
   type: unpublished
-  title: "ARMD-Predict: Multi-Site Machine Learning to Predict Antibiotic Resistance before Culture Results"
+  title: "ARMD-Predict: Multi-Site AI to Predict Antibiotic Resistance before Culture Results"
   authors:
     - family-names: "Nateghi Haredasht"
       given-names: "Fateme"

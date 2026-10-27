@@ -2,7 +2,7 @@
   <img src="assets/armd-predict-logo.svg" alt="ARMD-Predict logo: a teal culture plate with three antibiotic discs, circled by a purple orbit" width="200">
 </p>
 
-<h1 align="center">ARMD-Predict: Multi-Site Machine Learning to Predict Antibiotic Resistance before Culture Results</h1>
+<h1 align="center">ARMD-Predict: Multi-Site AI to Predict Antibiotic Resistance before Culture Results</h1>
 
 <p align="center">
   <a href="https://healthrex.github.io/ARMD-Predict/"><img src="https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=googlechrome&logoColor=white&color=082A5E" alt="Website"></a>
@@ -86,7 +86,7 @@ If you use ARMD-Predict, please cite:
 
 ```bibtex
 @unpublished{nateghiharedasht2026armdpredict,
-  title  = {{ARMD-Predict}: Multi-Site Machine Learning to Predict Antibiotic Resistance before Culture Results},
+  title  = {{ARMD-Predict}: Multi-Site AI to Predict Antibiotic Resistance before Culture Results},
   author = {Nateghi Haredasht, Fateme and Marshall, Nicholas P. and Chen, Wenyuan and Cooper, Lauren N. and Wei, Ziming and Konsker, Harrison and Chen, Jacob S. and Klompas, Michael and McKenna, Cara and Medford, Richard J. and Kanjilal, Sanjat and Schoeffler, Austin J. and Ma, Stephen P. and Banaei, Niaz and Asch, Steven M. and Chang, Amy and Deresinski, Stanley C. and Goldstein, Mary K. and Tibshirani, Robert and Chen, Jonathan H.},
   year   = {2026},
   note   = {Manuscript submitted for publication},
